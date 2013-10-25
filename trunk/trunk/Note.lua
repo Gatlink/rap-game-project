@@ -5,7 +5,6 @@ Note = {}
 Note.__index = Note
 
 local _sprites = {}
-local _size = 32
 local _speed = 100
 
 Note.Left  = -1
@@ -14,7 +13,7 @@ Note.Right =  1
 Note.Passive = 0
 Note.Active  = 1
 Note.Hit     = 2
-Note.Fail    = 3
+Note.Miss    = 3
 
 function Note.New(value, x, y, dir, state)
 	local new = {}
@@ -22,7 +21,7 @@ function Note.New(value, x, y, dir, state)
 	new.value = value or GamePad.A
 	new.x = x or 0
 	new.y = y or 0
-	new.dir = dir or Note.Right
+	new.direction = dir or Note.Right
 	new.state = state or Note.Passive
 
 	setmetatable(new, Note)
@@ -37,13 +36,16 @@ function Note.Load()
 end
 
 function Note:Draw()
-	love.graphics.setScissor(self.x, self.y, _size, _size)
-	love.graphics.draw(_sprites[self.value], self.x, self.y, 0, 1, 1, 0, self.state * _size)
+	love.graphics.setScissor(self.x - Settings.NoteSize / 2 , self.y - Settings.NoteSize / 2, Settings.NoteSize, Settings.NoteSize)
+	love.graphics.push()
+	love.graphics.translate(-Settings.NoteSize / 2, -Settings.NoteSize / 2)
+	love.graphics.draw(_sprites[self.value], self.x, self.y, 0, 1, 1, 0, self.state * Settings.NoteSize)
+	love.graphics.pop()
 	love.graphics.setScissor()
 end
 
 function Note:Update(dt)
-	if self.x <= Settings.ScreenWidth and self.x >= -_size then
-		self.x = self.x + dt * self.dir * _speed
+	if self.x <= Settings.ScreenWidth and self.x >= -Settings.NoteSize then
+		self.x = self.x + dt * self.direction * _speed
 	end
 end

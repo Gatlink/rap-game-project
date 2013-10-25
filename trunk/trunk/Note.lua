@@ -42,7 +42,7 @@ function Note:Draw()
 end
 
 function Note:Update(dt)
-	if self.x <= Settings.ScreenWidth and self.x >= 0 then
+	if self.x <= Settings.ScreenWidth and self.x >= -_size then
 		self.x = self.x + dt * self.dir * _speed
 	end
 end

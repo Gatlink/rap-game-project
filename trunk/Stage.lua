@@ -6,14 +6,57 @@ Stage = {}
 
 local _notes = {}
 local _hitzoneWidth = Settings.ScreenWidth * Settings.HitzoneWidthRatio
+local _leftHitzoneBorder = Settings.ScreenWidth / 2 - _hitzoneWidth / 2
+local _rightHitzoneBorder = Settings.ScreenWidth / 2 + _hitzoneWidth / 2
 
--- function onA()
--- 	print("lol")
--- end
+-- HIT TESTS
+local function isInsideHitzone(note)
+	return note.x > _leftHitzoneBorder and note.x < _rightHitzoneBorder
+end
+
+local function hasLeftHitzone(note)
+	return (note.direction == Note.Left and note.x < _leftHitzoneBorder)
+		or (note.direction == Note.Right and note.x > _rightHitzoneBorder)
+end
+
+-- BUTTON CALLBACKS
+function ValidOneKey(key)
+	for _, note in ipairs(_notes) do
+		-- if one note isn't in the zone yet, any of the following ones will be
+		if not (isInsideHitzone(note) or hasLeftHitzone(note)) then
+			break
+		end
+
+		if not hasLeftHitzone(note) and note.state ~= Note.Hit and note.value == key then
+			note.state = Note.Hit
+			break
+		end
+	end
+end
+
+function onA()
+	ValidOneKey(GamePad.A)
+end
+
+function onB()
+	ValidOneKey(GamePad.B)
+end
+
+function onX()
+	ValidOneKey(GamePad.X)
+end
+
+function onY()
+	ValidOneKey(GamePad.Y)
+end
+
 
 function Stage.Load()
 	Note.Load()
-	-- GamePad:RegisterEvent(GamePad.X, onA)
+	GamePad:RegisterEvent(GamePad.A, onA)
+	GamePad:RegisterEvent(GamePad.B, onB)
+	GamePad:RegisterEvent(GamePad.X, onX)
+	GamePad:RegisterEvent(GamePad.Y, onY)
 end
 
 function Stage.Update(dt)
@@ -26,13 +69,21 @@ function Stage.Update(dt)
 	end
 
 	for _, note in ipairs(_notes) do
+		if isInsideHitzone(note) and note.state == Note.Passive then
+			note.state = Note.Active
+		end
+
+		if hasLeftHitzone(note) and note.state ~= Note.Hit then
+			note.state = Note.Miss
+		end
+
 		note:Update(dt)
 	end
 end
 
 function Stage.Draw()
-	love.graphics.setColor(223, 221, 21)
-	love.graphics.rectangle('fill', Settings.ScreenWidth / 2  - _hitzoneWidth / 2, 0, _hitzoneWidth, Settings.ScreenHeight)
+	love.graphics.setColor(223, 223, 223)
+	love.graphics.rectangle('fill', _leftHitzoneBorder, 0, _hitzoneWidth, Settings.ScreenHeight)
 	love.graphics.setColor(255, 255, 255)
 
 	for _, note in ipairs(_notes) do

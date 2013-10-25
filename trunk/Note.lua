@@ -1,14 +1,11 @@
+require 'GamePad'
+
 Note = {}
 Note.__index = Note
 
 local _sprites = {}
 local _size = 32
 local _speed = 100
-
-Note.A = 1
-Note.B = 2
-Note.X = 3
-Note.Y = 4
 
 Note.Left  = -1
 Note.Right =  1
@@ -21,7 +18,7 @@ Note.Fail    = 3
 function Note.New(value, x, y, dir, state)
 	local new = {}
 
-	new.value = value or Note.A
+	new.value = value or GamePad.A
 	new.x = x or 0
 	new.y = y or 0
 	new.dir = dir or Note.Right
@@ -32,10 +29,10 @@ function Note.New(value, x, y, dir, state)
 end
 
 function Note.Load()
-	_sprites[Note.A] = love.graphics.newImage('assets/sprites/A.png')
-	_sprites[Note.B] = love.graphics.newImage('assets/sprites/B.png')
-	_sprites[Note.X] = love.graphics.newImage('assets/sprites/X.png')
-	_sprites[Note.Y] = love.graphics.newImage('assets/sprites/Y.png')
+	_sprites[GamePad.A] = love.graphics.newImage('assets/sprites/A.png')
+	_sprites[GamePad.B] = love.graphics.newImage('assets/sprites/B.png')
+	_sprites[GamePad.X] = love.graphics.newImage('assets/sprites/X.png')
+	_sprites[GamePad.Y] = love.graphics.newImage('assets/sprites/Y.png')
 end
 
 function Note:Draw()

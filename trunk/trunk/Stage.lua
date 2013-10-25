@@ -7,8 +7,13 @@ Stage = {}
 local _notes = {}
 local _hitzoneWidth = Settings.ScreenWidth * Settings.HitzoneWidthRatio
 
+-- function onA()
+-- 	print("lol")
+-- end
+
 function Stage.Load()
 	Note.Load()
+	-- GamePad:RegisterEvent(GamePad.X, onA)
 end
 
 function Stage.Update(dt)

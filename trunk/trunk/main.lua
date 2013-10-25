@@ -1,13 +1,12 @@
 require 'Settings'
-require 'Note'
-require 'NoteGenerator'
+require 'Stage'
 
 local notes = {}
 
 function love.load(arg)
 	love.graphics.setMode(Settings.ScreenWidth, Settings.ScreenHeight)
 
-	Note.Load()
+	Stage.Load()
 end
 
 function love.keypressed(key)
@@ -29,22 +28,9 @@ function love.keyreleased(key)
 end
 
 function love.draw()
-	for i,note in ipairs(notes) do
-		note:Draw()
-	end
+	Stage.Draw()
 end
 
 function love.update(dt)
-
-	NoteGenerator.Update(dt)
-
-	local new_note = NoteGenerator.GetNextNote()
-	while new_note do 
-		table.insert(notes, new_note)
-		new_note = NoteGenerator.GetNextNote()
-	end
-
-	for i,note in ipairs(notes) do
-		note:Update(dt)
-	end
+	Stage.Update(dt)
 end

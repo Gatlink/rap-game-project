@@ -1,3 +1,4 @@
+require 'Settings'
 require 'GamePad'
 
 Note = {}

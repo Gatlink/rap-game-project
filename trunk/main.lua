@@ -1,7 +1,9 @@
 require 'Settings'
 require 'Stage'
+require 'GamePad'
 
 local notes = {}
+
 
 function love.load(arg)
 	love.graphics.setMode(Settings.ScreenWidth, Settings.ScreenHeight)
@@ -13,13 +15,25 @@ function love.keypressed(key)
 	if key == 'escape' then
 		love.event.push('quit')
 	elseif key == "1" then
-		GamePad:Onpress(0, GamePad.A)
+		GamePad:OnPress(0, GamePad.A)
 	elseif key == "2" then
-		GamePad:Onpress(0, GamePad.B)
+		GamePad:OnPress(0, GamePad.B)
 	elseif key == "3" then
-		GamePad:Onpress(0, GamePad.X)
+		GamePad:OnPress(0, GamePad.X)
 	elseif key == "4" then
-		GamePad:Onpress(0, GamePad.Y)
+		GamePad:OnPress(0, GamePad.Y)
+	end
+end
+
+function love.joystickpressed(joystick, key)
+	if key == 1 then
+		GamePad:OnPress(0, GamePad.A)
+	elseif key == 2 then
+		GamePad:OnPress(0, GamePad.B)
+	elseif key == 3 then
+		GamePad:OnPress(0, GamePad.X)
+	elseif key == 4 then
+		GamePad:OnPress(0, GamePad.Y)
 	end
 end
 

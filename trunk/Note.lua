@@ -36,7 +36,9 @@ function Note.Load()
 end
 
 function Note:Draw()
+	love.graphics.setScissor(self.x, self.y, _size, _size)
 	love.graphics.draw(_sprites[self.value], self.x, self.y, 0, 1, 1, 0, self.state * _size)
+	love.graphics.setScissor()
 end
 
 function Note:Update(dt)

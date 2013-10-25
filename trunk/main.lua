@@ -7,7 +7,7 @@ function love.load(arg)
 	love.graphics.setMode(Settings.ScreenWidth, Settings.ScreenHeight)
 
 	Note.Load()
-	testNote = Note.New()
+	testNote = Note.New(Note.A, 5, 5)
 end
 
 function love.keypressed(key)
@@ -21,6 +21,8 @@ function love.keypressed(key)
 		GamePad:Onpress(0, GamePad.X)
 	elseif key == "4" then
 		GamePad:Onpress(0, GamePad.Y)
+	elseif key == ' ' then
+		testNote.value = (testNote.value) % 4 + 1
 	end
 end
 

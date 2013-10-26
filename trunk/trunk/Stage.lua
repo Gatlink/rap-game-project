@@ -28,7 +28,6 @@ local _rightHitzoneBorder = Settings.ScreenWidth / 2 + _hitzoneWidth / 2
 
 
 local _interludeTimeout = 5
-local _timeLeftInRound = 15
 
 local _deejay = {
 	backgroundBeat = nil
@@ -121,6 +120,8 @@ function Stage.Load()
 	_playerRight:setPosition(7*Settings.ScreenWidth/8, Settings.ScreenHeight/2)
 	_playerLeft:setPosition(Settings.ScreenWidth/8, Settings.ScreenHeight/2)
 
+	NoteGenerator.Generate(15)
+
 end
 
 function Stage.Update(dt)
@@ -174,27 +175,22 @@ function Stage.Update(dt)
 	end
 
 	local newNote = NoteGenerator.GetNextNote()
-		while newNote do
-			table.insert(_notes, newNote)
-			newNote = NoteGenerator.GetNextNote()
-		end
+	while newNote do
+		table.insert(_notes, newNote)
+		newNote = NoteGenerator.GetNextNote()
+	end
 
-	_timeLeftInRound = _timeLeftInRound - dt
-	-- timeout
-	if _timeLeftInRound < 0 then
-		-- we stop the note generator
-		NoteGenerator.Stop()
-		-- we wait for the current notes to finish
-		if #_notes == 0 then
-			_interludeTimeout = _interludeTimeout - dt
-			-- we wait for the interlude to finish
-			if _interludeTimeout <= 0 then
-				-- we start the next round
-				NoteGenerator.Start()
-				NoteGenerator.ToggleDirection()
-				_timeLeftInRound = 30
-				_interludeTimeout = 5
-			end
+
+	if #_notes == 0 and NoteGenerator.RemainingNotes() == 0 then
+		_interludeTimeout = _interludeTimeout - dt
+		_deejay.background:pause()
+		-- we wait for the interlude to finish
+		if _interludeTimeout <= 0 then
+			-- we start the next round
+			NoteGenerator.Generate(30)
+			NoteGenerator.ToggleDirection()
+			_deejay.background:play()
+			_interludeTimeout = 5
 		end
 	end
 

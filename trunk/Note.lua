@@ -35,9 +35,9 @@ end
 
 function Note.Load()
 	_sprites[GamePad.A] = LoveAnimation.new('assets/animations/note.lua')
-	_sprites[GamePad.B] = LoveAnimation.new('assets/animations/note.lua',love.graphics.newImage('assets/sprites/B.png'))
-	_sprites[GamePad.X] = LoveAnimation.new('assets/animations/note.lua',love.graphics.newImage('assets/sprites/X.png'))
-	_sprites[GamePad.Y] = LoveAnimation.new('assets/animations/note.lua',love.graphics.newImage('assets/sprites/Y.png'))
+	_sprites[GamePad.B] = LoveAnimation.new('assets/animations/note.lua','assets/sprites/B.png')
+	_sprites[GamePad.X] = LoveAnimation.new('assets/animations/note.lua','assets/sprites/X.png')
+	_sprites[GamePad.Y] = LoveAnimation.new('assets/animations/note.lua','assets/sprites/Y.png')
 end
 
 function Note:setState(state)

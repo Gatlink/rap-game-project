@@ -56,7 +56,7 @@ end
 
 function NoteGenerator.Update(dt)
 
-	if __notesPerInterval == 0 
+	if __notesPerInterval == 0
 		or _isRunning == false
 		or #__upcomingValues == 0 then
 		return
@@ -152,4 +152,8 @@ end
 
 function NoteGenerator.Timeout(t)
 	__timeout = t
+end
+
+function NoteGenerator.GetDirection()
+	return __direction
 end

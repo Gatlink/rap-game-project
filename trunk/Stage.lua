@@ -1,8 +1,12 @@
 require 'Settings'
 require 'Note'
 require 'NoteGenerator'
+require 'loveanimation'
 
 Stage = {}
+
+local _playerLeft = nil
+local _playerRight = nil
 
 local _notes = {}
 local _hitzoneWidth = Settings.ScreenWidth * Settings.HitzoneWidthRatio
@@ -57,10 +61,25 @@ function Stage.Load()
 	GamePad:RegisterEvent(GamePad.B, onB)
 	GamePad:RegisterEvent(GamePad.X, onX)
 	GamePad:RegisterEvent(GamePad.Y, onY)
+
+	_playerLeft = LoveAnimation.new("assets/animations/rapper1.lua")
+	_playerRight = _playerLeft:clone()
+	
+
+	_playerRight:setRelativeOrigin(0.5,0.5)
+	_playerLeft:setRelativeOrigin(0.5,0.5)
+	_playerLeft:flipHorizontal()
+	
+	_playerRight:setPosition(7*Settings.ScreenWidth/8, Settings.ScreenHeight/2)
+	_playerLeft:setPosition(Settings.ScreenWidth/8, Settings.ScreenHeight/2)
+
 end
 
 function Stage.Update(dt)
 	NoteGenerator.Update(dt)
+
+	_playerLeft:update(dt)
+	_playerRight:update(dt)
 
 	local newNote = NoteGenerator.GetNextNote()
 	while newNote do
@@ -85,6 +104,9 @@ function Stage.Draw()
 	love.graphics.setColor(223, 223, 223)
 	love.graphics.rectangle('fill', _leftHitzoneBorder, 0, _hitzoneWidth, Settings.ScreenHeight)
 	love.graphics.setColor(255, 255, 255)
+
+	_playerLeft:draw()
+	_playerRight:draw()
 
 	for _, note in ipairs(_notes) do
 		note:Draw()

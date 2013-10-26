@@ -6,6 +6,7 @@ Note = {}
 Note.__index = Note
 
 local _sprites = {}
+local _fx = nil
 
 Note.Left  = -1
 Note.Right =  1
@@ -26,13 +27,27 @@ function Note.New(value, x, y, dir, state)
 	new.direction = dir or Note.Right
 	new.state = state or Note.Passive
 	new.sprite = _sprites[new.value]:clone()
+
+	new.fx = _fx:clone()
+	new.fx:pause()
+	new.fx:setVisibility(false)
+	new.fx:onStateEnd("normal", hideFx)
+
 	new.sprite:setRelativeOrigin(0.5, 0.5)
+	new.fx:setRelativeOrigin(0.5, 0.5)
 
 	setmetatable(new, Note)
 	return new
 end
 
+hideFx = function(fx)
+	fx:setVisibility(false)
+	fx:pause()
+end
+
 function Note.Load()
+
+	_fx = LoveAnimation.new('assets/animations/fxhit.lua')
 	_sprites[GamePad.A] = LoveAnimation.new('assets/animations/note.lua')
 	_sprites[GamePad.B] = LoveAnimation.new('assets/animations/note.lua','assets/sprites/B.png')
 	_sprites[GamePad.X] = LoveAnimation.new('assets/animations/note.lua','assets/sprites/X.png')
@@ -42,18 +57,26 @@ end
 function Note:setState(state)
 	self.state = state
 	self.sprite:setState(tostring(state))
+	if state == Note.Hit then
+		self.fx:resetAnimation()
+		self.fx:setVisibility(true)
+		self.fx:unpause()
+	end
 end
 
 function Note:Draw()
 	self.sprite:draw()
+	self.fx:draw()
 end
 
 function Note:Update(dt)
 
 	self.x = self.x + dt * self.direction * Settings.NoteSpeed * (self.state == Note.Hit and 2 or 1)
 
+	self.fx:update(dt)
 	self.sprite:update(dt)
 	self.sprite:setPosition(self.x, self.y)
+	self.fx:setPosition(self.x, self.y)
 end
 
 function Note:SetAlive(a)

@@ -2,6 +2,7 @@ require 'Settings'
 require 'Note'
 require 'NoteGenerator'
 require 'loveanimation'
+require 'Announcement'
 
 Stage = {}
 
@@ -15,6 +16,8 @@ local _crowdCenter
 local _crowdRight
 local _crowdFrontLeft
 local _crowdFrontRight
+local _announcementReady
+local _announcementGo
 
 -- Players
 local _playerLeft = nil
@@ -31,7 +34,7 @@ local _rightHitzoneBorder = Settings.ScreenWidth / 2 + _hitzoneWidth / 2
 
 local _notesPerRound = Settings.DefaultNotesPerRound
 local _roundCount = 0
-local _interludeTimeout = 5
+local _interludeTimeout = 3
 local _timeLeftInRound = 15
 
 local _deejay = {
@@ -111,6 +114,8 @@ function Stage.Load()
 	_crowdFrontRight = _crowdLeft:clone()
 	_crowdFrontRight:setPosition(_crowdCenter.x + _crowdCenter:getFrameWidth(), 385)
 
+	_announcementReady = Announcement.New("assets/sprites/Ready.png",Settings.ScreenWidth/2,200)
+	_announcementGo = Announcement.New("assets/sprites/Go.png",Settings.ScreenWidth/2,200)
 
 	Note.Load()
 	GamePad:RegisterEvent(GamePad.A, onA)
@@ -120,10 +125,9 @@ function Stage.Load()
 
 	_deejay.background = love.audio.newSource("assets/music/beat2.ogg", "static")
 	_deejay.background:setLooping(true)
-	_deejay.background:play()
 
 	_playerLeft = LoveAnimation.new("assets/animations/rapper1.lua")
-	_playerRight = _playerLeft:clone()
+	_playerRight = LoveAnimation.new("assets/animations/rapper1.lua","assets/sprites/rapper2_spritesheet.png")
 
 
 	_playerRight:setRelativeOrigin(0.5,0.5)
@@ -131,9 +135,10 @@ function Stage.Load()
 	_playerLeft:flipHorizontal()
 
 	_playerRight:setPosition(7*Settings.ScreenWidth/8, Settings.ScreenHeight/2)
+	_playerRight:setCurrentFrame(1)
 	_playerLeft:setPosition(Settings.ScreenWidth/8, Settings.ScreenHeight/2)
 
-	NoteGenerator.Generate(_notesPerRound/2)
+	NoteGenerator.ToggleDirection()
 end
 
 function Stage.Update(dt)
@@ -197,19 +202,30 @@ function Stage.Update(dt)
 	if #_notes == 0 and NoteGenerator.RemainingNotes() == 0 then
 		_interludeTimeout = _interludeTimeout - dt
 		_deejay.background:pause()
+
+		-- Announcement
+		if _interludeTimeout <= 0.5 then
+			_announcementGo:Update(dt)
+		elseif _interludeTimeout <= 2.5 then
+			_announcementReady:Update(dt)
+		end
+
 		-- we wait for the interlude to finish
 		if _interludeTimeout <= 0 then
 
-			if _roundCount % 2 == 0 then
+			if _roundCount % 2 == 1 then
 				NoteGenerator.SetTimeInterval(NoteGenerator.GetTimeInterval() + 1)
-				NoteGenerator.SetNotesPerInterval(NoteGenerator.GetNotesPerInterval() + 5)
+				NoteGenerator.SetNotesPerInterval(NoteGenerator.GetNotesPerInterval() + 4)
 			end
 			_roundCount = _roundCount + 1
 			-- we start the next round
 			NoteGenerator.Generate(_notesPerRound)
 			NoteGenerator.ToggleDirection()
 			_deejay.background:play()
-			_interludeTimeout = Settings.InterludeTimeout
+			_interludeTimeout = 3
+
+			_announcementGo:Reset()
+			_announcementReady:Reset()
 		end
 	end
 
@@ -252,4 +268,13 @@ function Stage.Draw()
 	_crowdFrontLeft:draw()
 	_crowdFrontRight:draw()
 	_crowdCenter:draw()
+
+	-- Announcement
+	if #_notes == 0 and NoteGenerator.RemainingNotes() == 0 then
+		if _interludeTimeout <= 0.5 then
+			_announcementGo:Draw()
+		elseif _interludeTimeout <= 2.5 then
+			_announcementReady:Draw()
+		end
+	end
 end

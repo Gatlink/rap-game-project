@@ -13,14 +13,14 @@ function Announcement.New(imagePath, x, y)
 	new.y = y or 0
 	new.angle = 0
 	new.scale = 0.1
-	new.state = Announcement.Growth
+	new.state = Announcement.Grow
 
 	setmetatable(new, Announcement)
 	return new
 end
 
 function Announcement:Update(dt)
-	if self.state == Announcement.Growth then
+	if self.state == Announcement.Grow then
 		if self.scale >= 1.1 then
 			self.state = Announcement.Shrink
 		else
@@ -39,4 +39,10 @@ end
 
 function Announcement:Draw()
 	love.graphics.draw(self.sprite,self.x,self.y,self.angle,self.scale,self.scale,0.5*self.sprite:getWidth(),0.5*self.sprite:getHeight())
+end
+
+function Announcement:Reset()
+	self.angle = 0
+	self.scale = 0.1
+	self.state = Announcement.Grow
 end

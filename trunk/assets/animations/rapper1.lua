@@ -2,7 +2,7 @@ return {
 	imageSrc = "assets/sprites/rapper1_spritesheet.png",
 	defaultState = "idle",
 	states = {
-		idle = { 
+		idle = {
 			frameCount = 3,
 			offsetY = 0,
 			frameW = 512,
@@ -24,7 +24,7 @@ return {
 			frameW = 512,
 			frameH = 512,
 			nextState = "idle",
-			switchDelay = 0.5
+			switchDelay = 0.2
 		}
 	}
 }

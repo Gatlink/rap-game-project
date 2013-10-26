@@ -18,6 +18,8 @@ local _crowdFrontLeft
 local _crowdFrontRight
 local _announcementReady
 local _announcementGo
+local _announcementVictoryLeft
+local _announcementVictoryRight
 
 -- Players
 local _playerLeft = nil
@@ -99,6 +101,7 @@ function Stage.Load()
 	_hitzoneLeft = love.graphics.newImage("assets/sprites/Hitzone_gauche.png")
 	_hitzoneRight = love.graphics.newImage("assets/sprites/Hitzone_droite.png")
 
+	-- Crowd
 	_crowdLeft = LoveAnimation.new("assets/animations/crowd.lua")
 	_crowdLeft:setPosition(-35, 350)
 
@@ -117,8 +120,11 @@ function Stage.Load()
 	_crowdFrontRight = _crowdLeft:clone()
 	_crowdFrontRight:setPosition(_crowdCenter.x + _crowdCenter:getFrameWidth(), 385)
 
+	-- Announcement
 	_announcementReady = Announcement.New("assets/sprites/Ready.png",Settings.ScreenWidth/2,200)
 	_announcementGo = Announcement.New("assets/sprites/Go.png",Settings.ScreenWidth/2,200)
+	_announcementVictoryLeft = Announcement.New("assets/sprites/VictoryLeft.png",Settings.ScreenWidth/2,200)
+	_announcementVictoryRight = Announcement.New("assets/sprites/VictoryRight.png",Settings.ScreenWidth/2,200)
 
 	Note.Load()
 	GamePad:RegisterEvent(GamePad.A, onA)
@@ -149,6 +155,16 @@ function Stage.Load()
 end
 
 function Stage.Update(dt)
+	-- Vicotry
+	if _scoreLeft >= 100 or _scoreRight >= 100 then
+		if _scoreLeft >= 100 then
+			_announcementVictoryLeft:Update(dt)
+		else
+			_announcementVictoryRight:Update(dt)
+		end
+		_deejay.background:pause()
+		return
+	end
 
 	NoteGenerator.Update(dt)
 
@@ -293,5 +309,12 @@ function Stage.Draw()
 		elseif _interludeTimeout <= 2.5 then
 			_announcementReady:Draw()
 		end
+	end
+
+	-- Victory
+	if _scoreLeft >= 100 then
+		_announcementVictoryLeft:Draw(dt)
+	elseif _scoreRight >= 100 then
+		_announcementVictoryRight:Draw(dt)
 	end
 end

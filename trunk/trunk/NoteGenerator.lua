@@ -130,6 +130,14 @@ function NoteGenerator.SetTimeInterval(ti)
 	__timeInterval = ti
 end
 
+function NoteGenerator.GetNotesPerInterval(npi)
+	return __notesPerInterval
+end
+
+function NoteGenerator.GetTimeInterval(ti)
+	return __timeInterval
+end
+
 function NoteGenerator.GetNextNote()
 	return tablePop(__notes)
 end

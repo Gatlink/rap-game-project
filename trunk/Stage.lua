@@ -224,7 +224,7 @@ function Stage.Update(dt)
 			newNote = NoteGenerator.GetNextNote()
 		end
 
-	if _inRound and _deejay.cheers:getVolume() > 0.3 then
+	if _inRound and _deejay.cheers:getVolume() > 0.2 then
 		_deejay.cheers:setVolume(_deejay.cheers:getVolume() - 0.005)
 	end
 
@@ -239,6 +239,13 @@ function Stage.Update(dt)
 		if _inRound then
 			_deejay.scratch:play()
 		end
+
+
+		_crowdLeft:setSpeedMultiplier(2)
+		_crowdCenter:setSpeedMultiplier(2)
+		_crowdRight:setSpeedMultiplier(2)
+		_crowdFrontLeft:setSpeedMultiplier(2)
+		_crowdFrontRight:setSpeedMultiplier(2)
 
 		_inRound = false
 
@@ -267,6 +274,11 @@ function Stage.Update(dt)
 			_announcementReady:Reset()
 		end
 	else
+		_crowdLeft:setSpeedMultiplier(1)
+		_crowdCenter:setSpeedMultiplier(1)
+		_crowdRight:setSpeedMultiplier(1)
+		_crowdFrontLeft:setSpeedMultiplier(1)
+		_crowdFrontRight:setSpeedMultiplier(1)
 		_inRound = true
 	end
 

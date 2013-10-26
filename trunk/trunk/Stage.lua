@@ -13,6 +13,8 @@ local _hitzoneRight
 local _crowdLeft
 local _crowdCenter
 local _crowdRight
+local _crowdFrontLeft
+local _crowdFrontRight
 
 -- Players
 local _playerLeft = nil
@@ -30,6 +32,7 @@ local _rightHitzoneBorder = Settings.ScreenWidth / 2 + _hitzoneWidth / 2
 local _notesPerRound = Settings.DefaultNotesPerRound
 local _roundCount = 0
 local _interludeTimeout = 5
+local _timeLeftInRound = 15
 
 local _deejay = {
 	backgroundBeat = nil
@@ -101,6 +104,14 @@ function Stage.Load()
 	_crowdRight:setPosition(Settings.ScreenWidth - _crowdRight:getFrameWidth() + 35, 360)
 	_crowdRight:setCurrentFrame(1)
 
+	_crowdFrontLeft = _crowdRight:clone()
+	_crowdFrontLeft:setPosition(_crowdCenter.x - _crowdFrontLeft:getFrameWidth(), 390)
+	_crowdFrontLeft:setCurrentFrame(1)
+
+	_crowdFrontRight = _crowdLeft:clone()
+	_crowdFrontRight:setPosition(_crowdCenter.x + _crowdCenter:getFrameWidth(), 385)
+
+
 	Note.Load()
 	GamePad:RegisterEvent(GamePad.A, onA)
 	GamePad:RegisterEvent(GamePad.B, onB)
@@ -123,7 +134,6 @@ function Stage.Load()
 	_playerLeft:setPosition(Settings.ScreenWidth/8, Settings.ScreenHeight/2)
 
 	NoteGenerator.Generate(_notesPerRound/2)
-
 end
 
 function Stage.Update(dt)
@@ -135,6 +145,8 @@ function Stage.Update(dt)
 	_crowdLeft:update(dt)
 	_crowdCenter:update(dt)
 	_crowdRight:update(dt)
+	_crowdFrontLeft:update(dt)
+	_crowdFrontRight:update(dt)
 
 	for i, note in ipairs(_notes) do
 		-- Is player right hit
@@ -177,11 +189,10 @@ function Stage.Update(dt)
 	end
 
 	local newNote = NoteGenerator.GetNextNote()
-	while newNote do
-		table.insert(_notes, newNote)
-		newNote = NoteGenerator.GetNextNote()
-	end
-
+		while newNote do
+			table.insert(_notes, newNote)
+			newNote = NoteGenerator.GetNextNote()
+		end
 
 	if #_notes == 0 and NoteGenerator.RemainingNotes() == 0 then
 		_interludeTimeout = _interludeTimeout - dt
@@ -238,5 +249,7 @@ function Stage.Draw()
 	-- crowd
 	_crowdRight:draw()
 	_crowdLeft:draw()
+	_crowdFrontLeft:draw()
+	_crowdFrontRight:draw()
 	_crowdCenter:draw()
 end

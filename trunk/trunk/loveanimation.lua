@@ -35,7 +35,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -- The animation class
 -- Loads an animation file (containing a path to the image)
 -- Check the animation file template for the format
--- 
+--
 -- @member filepath the path of the animation file
 -- @member descriptor the object loaded from the file (describes the animation frames)
 -- @member currentState the state the animation is in. Each state is a line in the image
@@ -91,7 +91,7 @@ end
 -- @param image [optional] an image object
 -- @return the animation object
 --
-function LoveAnimation.new(filepath, image)
+function LoveAnimation.new(filepath, imagePath)
 
 	local desc = nil
 	if LoveAnimation.__loadedDescriptors[filepath] then
@@ -107,7 +107,7 @@ function LoveAnimation.new(filepath, image)
 	setmetatable(new_anim, LoveAnimation)
 	new_anim.filepath = filepath
 	new_anim.descriptor = desc
-	new_anim.texture = image or love.graphics.newImage(desc.imageSrc)
+	new_anim.texture = imagePath and love.graphics.newImage(imagePath) or love.graphics.newImage(desc.imageSrc)
 	new_anim:resetAnimation()
 
 	return new_anim
@@ -119,7 +119,7 @@ function LoveAnimation:clone()
 	setmetatable(new_anim, LoveAnimation)
 
 	new_anim.filepath = self.filepath
-	new_anim.descriptor = self.descriptor	
+	new_anim.descriptor = self.descriptor
 	new_anim.texture = self.texture
 	new_anim:resetAnimation()
 	return new_anim
@@ -142,7 +142,7 @@ function LoveAnimation:update(dt)
 		-- switch to the next frame
 		self.currentFrame = self.currentFrame + 1
 		if self.currentFrame >= state_descriptor.frameCount then
-			-- last frame reached, set next state	
+			-- last frame reached, set next state
 			self.currentFrame = 0
 
 			--callbacks
@@ -153,7 +153,7 @@ function LoveAnimation:update(dt)
 				self._stateStartCallbacks[state_descriptor.nextState] then
 				self._stateStartCallbacks[state_descriptor.nextState]()
 			end
-			
+
 			self.currentState = state_descriptor.nextState
 		end
 		-- reset tick
@@ -227,6 +227,20 @@ function LoveAnimation:setState(state)
 	end
 
 end
+
+--
+--
+--
+--
+function LoveAnimation:setCurrentFrame(f)
+
+	local state_descriptor = self.descriptor.states[self.currentState]
+	if f < state_descriptor.frameCount then
+		self.currentFrame = f
+	end
+
+end
+
 
 --
 --
@@ -338,6 +352,17 @@ end
 function LoveAnimation:flipHorizontal()
 	self.flipX = -1 * self.flipX
 end
+
+function LoveAnimation:getFrameWidth()
+	local state_descriptor = self.descriptor.states[self.currentState]
+	return state_descriptor.frameW
+end
+
+function LoveAnimation:getFrameHeight()
+	local state_descriptor = self.descriptor.states[self.currentState]
+	return state_descriptor.frameH
+end
+
 
 --
 -- EVENTS

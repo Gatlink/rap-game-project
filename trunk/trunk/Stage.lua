@@ -10,6 +10,9 @@ local _timeline
 local _streetCred
 local _hitzoneLeft
 local _hitzoneRight
+local _crowdLeft
+local _crowdCenter
+local _crowdRight
 
 -- Players
 local _playerLeft = nil
@@ -81,10 +84,21 @@ end
 
 
 function Stage.Load()
-	_timeline = love.graphics.newImage('assets/sprites/Timeline.png')
-	_streetCred = love.graphics.newImage('assets/sprites/StreetCred_Remplissage_00.png')
-	_hitzoneLeft = love.graphics.newImage('assets/sprites/Hitzone_gauche.png')
-	_hitzoneRight = love.graphics.newImage('assets/sprites/Hitzone_droite.png')
+	_timeline = love.graphics.newImage("assets/sprites/Timeline.png")
+	_streetCred = love.graphics.newImage("assets/sprites/StreetCred_Remplissage_00.png")
+	_hitzoneLeft = love.graphics.newImage("assets/sprites/Hitzone_gauche.png")
+	_hitzoneRight = love.graphics.newImage("assets/sprites/Hitzone_droite.png")
+
+	_crowdLeft = LoveAnimation.new("assets/animations/crowd.lua")
+	_crowdLeft:setPosition(-35, 350)
+
+	_crowdCenter = LoveAnimation.new("assets/animations/crowd.lua","assets/sprites/public_02_spritesheet.png")
+	_crowdCenter:setPosition(Settings.ScreenWidth / 2 - _crowdCenter:getFrameWidth(0) / 2, 380)
+	_crowdCenter:setCurrentFrame(2)
+
+	_crowdRight = LoveAnimation.new("assets/animations/crowd.lua","assets/sprites/public_01_spritesheet.png")
+	_crowdRight:setPosition(Settings.ScreenWidth - _crowdRight:getFrameWidth() + 35, 360)
+	_crowdRight:setCurrentFrame(1)
 
 	Note.Load()
 	GamePad:RegisterEvent(GamePad.A, onA)
@@ -115,6 +129,9 @@ function Stage.Update(dt)
 
 	_playerLeft:update(dt)
 	_playerRight:update(dt)
+	_crowdLeft:update(dt)
+	_crowdCenter:update(dt)
+	_crowdRight:update(dt)
 
 	for i, note in ipairs(_notes) do
 		-- Is player right hit
@@ -213,4 +230,9 @@ function Stage.Draw()
 	-- Players
 	_playerLeft:draw()
 	_playerRight:draw()
+
+	-- crowd
+	_crowdRight:draw()
+	_crowdLeft:draw()
+	_crowdCenter:draw()
 end

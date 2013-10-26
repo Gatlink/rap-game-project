@@ -5,8 +5,18 @@ require 'loveanimation'
 
 Stage = {}
 
+-- Sprites
+local _timeline
+local _streetCred
+local _hitzoneLeft
+local _hitzoneRight
+
+-- Players
 local _playerLeft = nil
 local _playerRight = nil
+local _scoreLeft = 0
+local _scoreRight = 0
+
 
 local _notes = {}
 local _hitzoneWidth = Settings.ScreenWidth * Settings.HitzoneWidthRatio
@@ -18,9 +28,7 @@ local _interludeTimeout = 5
 local _timeLeftInRound = 15
 
 local _deejay = {
-	
 	backgroundBeat = nil
-	
 }
 
 -- HIT TESTS
@@ -43,8 +51,13 @@ function ValidOneKey(key)
 
 		if not hasLeftHitzone(note) and note.state ~= Note.Hit and note.value == key then
 			note:setState(Note.Hit)
-			local player = note.direction == Note.Right and _playerLeft or _playerRight
-			player:setState('attack')
+
+			if note.direction == Note.Right then
+				_playerLeft:setState('attack')
+			else
+				_playerRight:setState('attack')
+			end
+
 			break
 		end
 	end
@@ -68,6 +81,11 @@ end
 
 
 function Stage.Load()
+	_timeline = love.graphics.newImage('assets/sprites/Timeline.png')
+	_streetCred = love.graphics.newImage('assets/sprites/StreetCred_Remplissage_00.png')
+	_hitzoneLeft = love.graphics.newImage('assets/sprites/Hitzone_gauche.png')
+	_hitzoneRight = love.graphics.newImage('assets/sprites/Hitzone_droite.png')
+
 	Note.Load()
 	GamePad:RegisterEvent(GamePad.A, onA)
 	GamePad:RegisterEvent(GamePad.B, onB)
@@ -98,26 +116,24 @@ function Stage.Update(dt)
 	_playerLeft:update(dt)
 	_playerRight:update(dt)
 
-	--local toDestroy = {}
 	for i, note in ipairs(_notes) do
 		-- Is player right hit
 		if note.direction == Note.Right
 		and note.state == Note.Hit
 		and _playerRight:intersects(note.x, note.y) then
 			_playerRight:setState('dammage')
+			_scoreLeft = _scoreLeft + 1
 			note:SetAlive(false)
-			--table.insert(toDestroy, i)
 		-- Is player left hit
 		elseif note.direction == Note.Left
-			and note.state == Note.Hit
-			and _playerLeft:intersects(note.x, note.y) then
-				_playerLeft:setState('dammage')
-				note:SetAlive(false)
-				--table.insert(toDestroy, i)
+		and note.state == Note.Hit
+		and _playerLeft:intersects(note.x, note.y) then
+			_playerLeft:setState('dammage')
+			_scoreRight = _scoreRight + 1
+			note:SetAlive(false)
 		elseif note.x > Settings.ScreenWidth + Settings.NoteSize
 			or note.x < -Settings.NoteSize then
 			note:SetAlive(false)
-			--table.insert(toDestroy, i)
 		end
 
 		if isInsideHitzone(note) and note.state == Note.Passive then
@@ -173,14 +189,32 @@ function Stage.Update(dt)
 end
 
 function Stage.Draw()
-	love.graphics.setColor(223, 223, 223)
-	love.graphics.rectangle('fill', _leftHitzoneBorder, 0, _hitzoneWidth, Settings.ScreenHeight)
+	-- Street Cred bars
+	local quad = love.graphics.newQuad(0,0,_scoreLeft/100*Settings.StreetCredWidth + 1,Settings.StreetCredHeight,Settings.StreetCredWidth,Settings.StreetCredHeight)
+	love.graphics.drawq(_streetCred, quad, 3, 50)
+
+	local actualWidth = _scoreRight/100*Settings.StreetCredWidth + 1
+	quad = love.graphics.newQuad(0,0,actualWidth,Settings.StreetCredHeight,Settings.StreetCredWidth,Settings.StreetCredHeight)
+	love.graphics.drawq(_streetCred, quad, Settings.ScreenWidth - actualWidth - 3, 50)
+
+	-- Timeline
+	love.graphics.draw(_timeline, 0, 42)
+
+	-- Hitzone
+	local hitzoneX = Settings.ScreenWidth / 2 - _hitzoneWidth / 2
+	love.graphics.setColor(0, 76, 255, 85)
+	love.graphics.rectangle('fill', hitzoneX + Settings.HitzoneBorderWidth, Settings.HitzoneYOffset, _hitzoneWidth - 2 * Settings.HitzoneBorderWidth, Settings.HitzoneHeight)
+	love.graphics.setColor(255, 255, 255, 85)
+	love.graphics.draw(_hitzoneLeft, hitzoneX, Settings.HitzoneYOffset)
+	love.graphics.draw(_hitzoneRight, hitzoneX + _hitzoneWidth - Settings.HitzoneBorderWidth, Settings.HitzoneYOffset)
 	love.graphics.setColor(255, 255, 255)
 
-	_playerLeft:draw()
-	_playerRight:draw()
-
+	-- Notes
 	for _, note in ipairs(_notes) do
 		note:Draw()
 	end
+
+	-- Players
+	_playerLeft:draw()
+	_playerRight:draw()
 end

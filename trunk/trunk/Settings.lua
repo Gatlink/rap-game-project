@@ -25,3 +25,5 @@ Settings.DefaultNotesPerInterval = 3
 Settings.DefaultNotesPerRound = 30
 
 Settings.InterludeTimeout = 3
+
+Settings.BeatFilesAvailable = 6

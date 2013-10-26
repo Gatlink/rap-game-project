@@ -144,7 +144,8 @@ function Stage.Load()
 	GamePad:RegisterEvent(GamePad.X, onX)
 	GamePad:RegisterEvent(GamePad.Y, onY)
 
-	_deejay.background = love.audio.newSource("assets/music/beat2.ogg", "static")
+	_deejay.background = love.audio.newSource("assets/music/beat" .. 
+		math.random(1,Settings.BeatFilesAvailable + 1) .. ".ogg", "static")
 	_deejay.background:setLooping(true)
 	_deejay.cheers = love.audio.newSource("assets/music/cheers.ogg", "static")
 	_deejay.cheers:setLooping(true)

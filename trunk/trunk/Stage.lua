@@ -88,6 +88,11 @@ function Stage.Update(dt)
 	end
 
 	for _, note in ipairs(_notes) do
+
+		if _playerRight:intersects(note.x, note.y) then
+			print("intersect")
+		end
+
 		if isInsideHitzone(note) and note.state == Note.Passive then
 			note:setState(Note.Active)
 		end

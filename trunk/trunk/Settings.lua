@@ -21,3 +21,5 @@ Settings.NoteSpeed = 200
 
 Settings.DefaultNoteGenerationInterval =  2
 Settings.DefaultNotesPerInterval = 3
+
+Settings.DefaultNotesPerRound = 30

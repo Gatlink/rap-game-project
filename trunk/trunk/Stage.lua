@@ -169,15 +169,10 @@ function Stage.Update(dt)
 		NoteGenerator.Stop()
 		-- we wait for the current notes to finish
 		if #_notes == 0 then
-
-			if not _deejay.background:isPaused() then
-				_deejay.background:pause()
-			end
 			_interludeTimeout = _interludeTimeout - dt
 			-- we wait for the interlude to finish
 			if _interludeTimeout <= 0 then
 				-- we start the next round
-				_deejay.background:play()
 				NoteGenerator.Start()
 				NoteGenerator.ToggleDirection()
 				_timeLeftInRound = 30
@@ -194,8 +189,9 @@ function Stage.Draw()
 	love.graphics.drawq(_streetCred, quad, 3, 50)
 
 	local actualWidth = _scoreRight/100*Settings.StreetCredWidth + 1
+	local halfWidth, halfHeight = 0.5*_streetCred:getWidth(), 0.5*_streetCred:getHeight()
 	quad = love.graphics.newQuad(0,0,actualWidth,Settings.StreetCredHeight,Settings.StreetCredWidth,Settings.StreetCredHeight)
-	love.graphics.drawq(_streetCred, quad, Settings.ScreenWidth - actualWidth - 3, 50)
+	love.graphics.drawq(_streetCred,quad,Settings.ScreenWidth - halfWidth - 3,50 + halfHeight,0,-1,1,halfWidth,halfHeight)
 
 	-- Timeline
 	love.graphics.draw(_timeline, 0, 42)

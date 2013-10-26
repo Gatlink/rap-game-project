@@ -44,6 +44,7 @@ local _deejay = {
 	backgroundBeat = nil,
 	words = {}
 }
+local _lastWord
 
 -- HIT TESTS
 local function isInsideHitzone(note)
@@ -67,7 +68,11 @@ function ValidOneKey(key)
 			_hitCount= _hitCount + 1
 		elseif not hasLeftHitzone(note) and note.state ~= Note.Hit and note.state ~= Note.Miss and note.value == key then
 			note:setState(Note.Hit)
-			_deejay.words[math.random(1, Settings.WordCount)]:play()
+
+			if _lastWord ~= nil then _lastWord:stop() end
+			_lastWord = _deejay.words[math.random(1, Settings.WordCount)]
+			_lastWord:play()
+
 			if note.direction == Note.Right then
 				_playerLeft:setState('attack')
 			else
@@ -208,7 +213,8 @@ function Stage.Update(dt)
 			end
 			_announcementVictoryRight:Update(dt)
 		end
-		_deejay.background:pause()
+		_lastWord:stop()
+		_deejay.background:stop()
 		_crowdLeft:setSpeedMultiplier(2)
 		_crowdCenter:setSpeedMultiplier(2)
 		_crowdRight:setSpeedMultiplier(2)

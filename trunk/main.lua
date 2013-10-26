@@ -6,6 +6,7 @@ local _background
 
 function love.load(arg)
 	love.graphics.setMode(Settings.ScreenWidth, Settings.ScreenHeight)
+	math.randomseed(os.time())
 
 	_background = love.graphics.newImage('assets/sprites/Background_00.png')
 

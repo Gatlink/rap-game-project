@@ -41,7 +41,8 @@ local _interludeTimeout = 3
 
 local _inRound = true
 local _deejay = {
-	backgroundBeat = nil
+	backgroundBeat = nil,
+	words = {}
 }
 
 -- HIT TESTS
@@ -66,6 +67,7 @@ function ValidOneKey(key)
 			_hitCount= _hitCount + 1
 		elseif not hasLeftHitzone(note) and note.state ~= Note.Hit and note.state ~= Note.Miss and note.value == key then
 			note:setState(Note.Hit)
+			_deejay.words[math.random(1, Settings.WordCount)]:play()
 			if note.direction == Note.Right then
 				_playerLeft:setState('attack')
 			else
@@ -167,6 +169,9 @@ function Stage.Load()
 -- 	_deejay.oooh2:setLooping(false)
 	_deejay.yeah = love.audio.newSource("assets/music/Yeah.ogg", "static")
 	_deejay.yeah:setLooping(false)
+	for i=1,Settings.WordCount do
+		table.insert(_deejay.words, love.audio.newSource("assets/music/word" .. i .. ".ogg"))
+	end
 
 	_playerLeft = LoveAnimation.new("assets/animations/rapper1.lua")
 	_playerRight = LoveAnimation.new("assets/animations/rapper1.lua","assets/sprites/rapper2_spritesheet.png")

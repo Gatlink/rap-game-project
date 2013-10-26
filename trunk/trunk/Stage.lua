@@ -153,10 +153,15 @@ function Stage.Update(dt)
 		NoteGenerator.Stop()
 		-- we wait for the current notes to finish
 		if #_notes == 0 then
+
+			if not _deejay.background:isPaused() then
+				_deejay.background:pause()
+			end
 			_interludeTimeout = _interludeTimeout - dt
 			-- we wait for the interlude to finish
 			if _interludeTimeout <= 0 then
 				-- we start the next round
+				_deejay.background:play()
 				NoteGenerator.Start()
 				NoteGenerator.ToggleDirection()
 				_timeLeftInRound = 30

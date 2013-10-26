@@ -72,9 +72,12 @@ function ValidOneKey(key)
 		elseif not hasLeftHitzone(note) and note.state ~= Note.Hit and note.state ~= Note.Miss and note.value == key then
 			note:setState(Note.Hit)
 
-			if _lastWord ~= nil then _lastWord:stop() end
-			_lastWord = _deejay.voices[note.direction][math.random(1, Settings.WordCount)]
-			_lastWord:play()
+			--if _lastWord ~= nil then _lastWord:stop() end
+			--_lastWord = _deejay.voices[note.direction][math.random(1, Settings.WordCount)]
+			--_lastWord:play()
+			_deejay.yo:stop()
+			_deejay.yo:setPitch(0.90 + note.value * 0.05)
+			_deejay.yo:play()
 
 			if note.direction == Note.Right then
 				_playerLeft:setState('attack')
@@ -83,7 +86,7 @@ function ValidOneKey(key)
 			end
 
 			if _hitCount >= 3 and math.random(0, 10) > 7 then
-				_deejay['oooh1']:play()
+				_deejay['oooh' .. math.random(1, 2)]:play()
 				_hitCount = 0
 			end
 			return
@@ -154,8 +157,8 @@ function Stage.Load()
 	-- Announcement
 	_announcementReady = Announcement.New("assets/sprites/Ready.png",Settings.ScreenWidth/2,200)
 	_announcementGo = Announcement.New("assets/sprites/Go.png",Settings.ScreenWidth/2,200)
-	_announcementVictoryLeft = Announcement.New("assets/sprites/VictoryLeft.png",Settings.ScreenWidth/2,200)
-	_announcementVictoryRight = Announcement.New("assets/sprites/VictoryRight.png",Settings.ScreenWidth/2,200)
+	_announcementVictoryLeft = Announcement.New("assets/sprites/VictoryLeft.png",Settings.ScreenWidth/2,300)
+	_announcementVictoryRight = Announcement.New("assets/sprites/VictoryRight.png",Settings.ScreenWidth/2,300)
 
 	Note.Load()
 	GamePad:RegisterEvent(GamePad.A, onA)
@@ -173,10 +176,12 @@ function Stage.Load()
 	_deejay.scratch:setLooping(false)
 	_deejay.oooh1 = love.audio.newSource("assets/music/Oooh1.ogg", "static")
 	_deejay.oooh1:setLooping(false)
--- 	_deejay.oooh2 = love.audio.newSource("assets/music/Oooh2.ogg", "static")
--- 	_deejay.oooh2:setLooping(false)
+ 	_deejay.oooh2 = love.audio.newSource("assets/music/Oooh2.ogg", "static")
 	_deejay.yeah = love.audio.newSource("assets/music/Yeah.ogg", "static")
 	_deejay.yeah:setLooping(false)
+	_deejay.ready = love.audio.newSource("assets/music/Ready.ogg", "static")
+	_deejay.go = love.audio.newSource("assets/music/Go.ogg", "static")
+	_deejay.yo = love.audio.newSource("assets/music/Yo.ogg", "static")
 	for i=1,Settings.WordCount do
 		table.insert(_deejay.voices[Note.Left], love.audio.newSource("assets/music/word" .. i .. ".ogg"))
 		table.insert(_deejay.voices[Note.Right], love.audio.newSource("assets/music/word" .. Settings.WordCount + i .. ".ogg"))
@@ -217,7 +222,7 @@ function Stage.Update(dt)
 			end
 			_announcementVictoryRight:Update(dt)
 		end
-		_lastWord:stop()
+		--_lastWord:stop()
 		_deejay.background:stop()
 		_crowdLeft:setSpeedMultiplier(2)
 		_crowdCenter:setSpeedMultiplier(2)
@@ -308,14 +313,16 @@ function Stage.Update(dt)
 		_crowdFrontLeft:setSpeedMultiplier(2)
 		_crowdFrontRight:setSpeedMultiplier(2)
 
-		_inRound = false
-
 		-- Announcement
-		if _interludeTimeout <= 0.5 then
+		if _interludeTimeout <= 0.3 then
 			_announcementGo:Update(dt)
+			_deejay.go:play()
 		elseif _interludeTimeout <= 2.5 then
 			_announcementReady:Update(dt)
+			if _inRound then _deejay.ready:play() end
 		end
+
+		_inRound = false
 
 		-- we wait for the interlude to finish
 		if _interludeTimeout <= 0 then

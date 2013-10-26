@@ -36,8 +36,12 @@ local _notesPerRound = Settings.DefaultNotesPerRound
 local _roundCount = 0
 local _interludeTimeout = 3
 
+local _inRound = true
+
 local _deejay = {
-	backgroundBeat = nil
+	backgroundBeat = nil,
+	cheers = nil,
+	scratch = nil
 }
 
 -- HIT TESTS
@@ -122,8 +126,12 @@ function Stage.Load()
 	GamePad:RegisterEvent(GamePad.X, onX)
 	GamePad:RegisterEvent(GamePad.Y, onY)
 
-	_deejay.background = love.audio.newSource("assets/music/beat2.ogg", "static")
+	_deejay.background = love.audio.newSource("assets/music/beat" .. 
+		math.random(1,4) .. ".ogg", "static")
 	_deejay.background:setLooping(true)
+	_deejay.cheers = love.audio.newSource("assets/music/cheers.ogg", "static")
+	_deejay.scratch = love.audio.newSource("assets/music/scratch.ogg", "static")
+	_deejay.scratch:setLooping(false)
 
 	_playerLeft = LoveAnimation.new("assets/animations/rapper1.lua")
 	_playerRight = LoveAnimation.new("assets/animations/rapper1.lua","assets/sprites/rapper2_spritesheet.png")
@@ -200,7 +208,15 @@ function Stage.Update(dt)
 
 	if #_notes == 0 and NoteGenerator.RemainingNotes() == 0 then
 		_interludeTimeout = _interludeTimeout - dt
-		_deejay.background:pause()
+		_deejay.background:stop()
+		if _inRound then
+			_deejay.cheers:play()
+		end
+		if _inRound then
+			_deejay.scratch:play()
+		end
+
+		_inRound = false
 
 		-- Announcement
 		if _interludeTimeout <= 0.5 then
@@ -226,6 +242,8 @@ function Stage.Update(dt)
 			_announcementGo:Reset()
 			_announcementReady:Reset()
 		end
+	else
+		_inRound = true
 	end
 
 end

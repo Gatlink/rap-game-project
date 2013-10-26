@@ -13,6 +13,10 @@ local _hitzoneWidth = Settings.ScreenWidth * Settings.HitzoneWidthRatio
 local _leftHitzoneBorder = Settings.ScreenWidth / 2 - _hitzoneWidth / 2
 local _rightHitzoneBorder = Settings.ScreenWidth / 2 + _hitzoneWidth / 2
 
+
+local _interludeTimeout = 5
+local _timeLeftInRound = 15
+
 local _deejay = {
 	
 	backgroundBeat = nil
@@ -88,31 +92,32 @@ function Stage.Load()
 end
 
 function Stage.Update(dt)
+
 	NoteGenerator.Update(dt)
 
 	_playerLeft:update(dt)
 	_playerRight:update(dt)
 
-	local newNote = NoteGenerator.GetNextNote()
-	while newNote do
-		table.insert(_notes, newNote)
-		newNote = NoteGenerator.GetNextNote()
-	end
-
-	local toDestroy = {}
+	--local toDestroy = {}
 	for i, note in ipairs(_notes) do
 		-- Is player right hit
 		if note.direction == Note.Right
 		and note.state == Note.Hit
 		and _playerRight:intersects(note.x, note.y) then
 			_playerRight:setState('dammage')
-			table.insert(toDestroy, i)
+			note:SetAlive(false)
+			--table.insert(toDestroy, i)
 		-- Is player left hit
 		elseif note.direction == Note.Left
-		and note.state == Note.Hit
-		and _playerLeft:intersects(note.x, note.y) then
-			_playerLeft:setState('dammage')
-			table.insert(toDestroy, i)
+			and note.state == Note.Hit
+			and _playerLeft:intersects(note.x, note.y) then
+				_playerLeft:setState('dammage')
+				note:SetAlive(false)
+				--table.insert(toDestroy, i)
+		elseif note.x > Settings.ScreenWidth + Settings.NoteSize
+			or note.x < -Settings.NoteSize then
+			note:SetAlive(false)
+			--table.insert(toDestroy, i)
 		end
 
 		if isInsideHitzone(note) and note.state == Note.Passive then
@@ -126,9 +131,40 @@ function Stage.Update(dt)
 		note:Update(dt)
 	end
 
-	for _, noteIdx in ipairs(toDestroy) do
-		table.remove(_notes, noteIdx)
+	local i = 1
+	while i <= #_notes do
+		if not _notes[i]:IsAlive() then
+			table.remove(_notes, i)
+			i = i - 1
+		end
+		i = i + 1
 	end
+
+	local newNote = NoteGenerator.GetNextNote()
+		while newNote do
+			table.insert(_notes, newNote)
+			newNote = NoteGenerator.GetNextNote()
+		end
+
+	_timeLeftInRound = _timeLeftInRound - dt
+	-- timeout
+	if _timeLeftInRound < 0 then
+		-- we stop the note generator
+		NoteGenerator.Stop()
+		-- we wait for the current notes to finish
+		if #_notes == 0 then
+			_interludeTimeout = _interludeTimeout - dt
+			-- we wait for the interlude to finish
+			if _interludeTimeout <= 0 then
+				-- we start the next round
+				NoteGenerator.Start()
+				NoteGenerator.ToggleDirection()
+				_timeLeftInRound = 30
+				_interludeTimeout = 5
+			end
+		end
+	end
+
 end
 
 function Stage.Draw()

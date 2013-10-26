@@ -16,6 +16,8 @@ Note.Active  = 2
 Note.Hit     = 3
 Note.Miss    = 4
 
+Note.Alive = true
+
 function Note.New(value, x, y, dir, state)
 	local new = {}
 
@@ -48,10 +50,17 @@ function Note:Draw()
 end
 
 function Note:Update(dt)
-	if self.x <= Settings.ScreenWidth and self.x >= -Settings.NoteSize then
-		self.x = self.x + dt * self.direction * _speed
-	end
+
+	self.x = self.x + dt * self.direction * _speed
 
 	self.sprite:update(dt)
 	self.sprite:setPosition(self.x, self.y)
+end
+
+function Note:SetAlive(a)
+	self.Alive = a
+end
+
+function Note:IsAlive()
+	return self.Alive
 end

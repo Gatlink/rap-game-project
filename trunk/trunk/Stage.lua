@@ -204,9 +204,11 @@ function Stage.Update(dt)
 			_announcementVictoryRight:Update(dt)
 		end
 		_deejay.background:pause()
-		_playerRight:update(dt)
-		_playerLeft:update(dt)
-		return
+		_crowdLeft:setSpeedMultiplier(2)
+		_crowdCenter:setSpeedMultiplier(2)
+		_crowdRight:setSpeedMultiplier(2)
+		_crowdFrontLeft:setSpeedMultiplier(2)
+		_crowdFrontRight:setSpeedMultiplier(2)
 	end
 
 	NoteGenerator.Update(dt)
@@ -218,6 +220,10 @@ function Stage.Update(dt)
 	_crowdRight:update(dt)
 	_crowdFrontLeft:update(dt)
 	_crowdFrontRight:update(dt)
+
+	if _scoreLeft >= 100 or _scoreRight >= 100 then
+		return
+	end
 
 	for i, note in ipairs(_notes) do
 		-- Is player right hit

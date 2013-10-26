@@ -6,7 +6,6 @@ Note = {}
 Note.__index = Note
 
 local _sprites = {}
-local _speed = 100
 
 Note.Left  = -1
 Note.Right =  1
@@ -51,7 +50,7 @@ end
 
 function Note:Update(dt)
 
-	self.x = self.x + dt * self.direction * _speed
+	self.x = self.x + dt * self.direction * Settings.NoteSpeed
 
 	self.sprite:update(dt)
 	self.sprite:setPosition(self.x, self.y)

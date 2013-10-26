@@ -14,6 +14,10 @@ Settings.HitzoneYOffset = 116
 Settings.NoteSize = 32
 Settings.NoteStartLeftX = 0
 Settings.NoteStartRightX = Settings.ScreenWidth
-Settings.NoteMinOffsetY = 120
-Settings.NoteMaxOffsetY = 470
-Settings.NoteMarginY = 35
+Settings.NoteMinOffsetY = 160
+Settings.NoteMaxOffsetY = 400
+
+Settings.NoteSpeed = 200
+
+Settings.DefaultNoteGenerationInterval =  2
+Settings.DefaultNotesPerInterval = 3

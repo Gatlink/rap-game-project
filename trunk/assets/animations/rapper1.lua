@@ -16,7 +16,7 @@ return {
 			frameW = 512,
 			frameH = 512,
 			nextState = "idle",
-			switchDelay = 0.1
+			switchDelay = 0.2
 		},
 		attack = {
 			frameCount = 3,
@@ -24,7 +24,7 @@ return {
 			frameW = 512,
 			frameH = 512,
 			nextState = "idle",
-			switchDelay = 0.1
+			switchDelay = 0.5
 		}
 	}
 }

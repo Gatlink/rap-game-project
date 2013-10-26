@@ -39,11 +39,8 @@ local _roundCount = 0
 local _interludeTimeout = 3
 
 local _inRound = true
-
 local _deejay = {
-	backgroundBeat = nil,
-	cheers = nil,
-	scratch = nil
+	backgroundBeat = nil
 }
 
 -- HIT TESTS
@@ -64,15 +61,30 @@ function ValidOneKey(key)
 			break
 		end
 
-		if not hasLeftHitzone(note) and note.state ~= Note.Hit and note.value == key then
+		if not hasLeftHitzone(note) and note.state ~= Note.Hit and note.state ~= Note.Miss and note.value == key then
 			note:setState(Note.Hit)
-
 			if note.direction == Note.Right then
 				_playerLeft:setState('attack')
 			else
 				_playerRight:setState('attack')
 			end
+			return
+		end
+	end
 
+	-- If the player hits a button that does not correspond to
+	-- any note in the hitzone, play damage anim and miss the first note.
+	if NoteGenerator.GetDirection() == Note.Right then
+		_playerLeft:setState('dammage')
+		_scoreLeft = math.max(_scoreLeft - 0.25, 0)
+	else
+		_playerRight:setState('dammage')
+		_scoreRight = math.max(_scoreRight - 0.25, 0)
+	end
+
+	for _, note in ipairs(_notes) do
+		if note.state == Note.Active or note.state == Note.Passive then
+			note:setState(Note.Miss)
 			break
 		end
 	end
@@ -132,8 +144,7 @@ function Stage.Load()
 	GamePad:RegisterEvent(GamePad.X, onX)
 	GamePad:RegisterEvent(GamePad.Y, onY)
 
-	_deejay.background = love.audio.newSource("assets/music/beat" .. 
-		math.random(1,4) .. ".ogg", "static")
+	_deejay.background = love.audio.newSource("assets/music/beat2.ogg", "static")
 	_deejay.background:setLooping(true)
 	_deejay.cheers = love.audio.newSource("assets/music/cheers.ogg", "static")
 	_deejay.cheers:setLooping(true)
@@ -239,7 +250,6 @@ function Stage.Update(dt)
 		if _inRound then
 			_deejay.scratch:play()
 		end
-
 
 		_crowdLeft:setSpeedMultiplier(2)
 		_crowdCenter:setSpeedMultiplier(2)

@@ -76,7 +76,9 @@ function Note:Update(dt)
 	self.fx:update(dt)
 	self.sprite:update(dt)
 	self.sprite:setPosition(self.x, self.y)
-	self.fx:setPosition(self.x, self.y)
+	if self.state ~= Note.Hit then
+		self.fx:setPosition(self.x, self.y)
+	end
 end
 
 function Note:SetAlive(a)

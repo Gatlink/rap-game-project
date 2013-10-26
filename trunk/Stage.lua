@@ -29,6 +29,7 @@ local _scoreRight = 0
 
 
 local _notes = {}
+local _hitCount = 0
 local _hitzoneWidth = Settings.ScreenWidth * Settings.HitzoneWidthRatio
 local _leftHitzoneBorder = Settings.ScreenWidth / 2 - _hitzoneWidth / 2
 local _rightHitzoneBorder = Settings.ScreenWidth / 2 + _hitzoneWidth / 2
@@ -61,12 +62,19 @@ function ValidOneKey(key)
 			break
 		end
 
-		if not hasLeftHitzone(note) and note.state ~= Note.Hit and note.state ~= Note.Miss and note.value == key then
+		if note.state == Note.Hit then
+			_hitCount= _hitCount + 1
+		elseif not hasLeftHitzone(note) and note.state ~= Note.Hit and note.state ~= Note.Miss and note.value == key then
 			note:setState(Note.Hit)
 			if note.direction == Note.Right then
 				_playerLeft:setState('attack')
 			else
 				_playerRight:setState('attack')
+			end
+
+			if _hitCount >= 3 and math.random(0, 10) > 7 then
+				_deejay['oooh' .. math.random(1,2)]:play()
+				_hitCount = 0
 			end
 			return
 		end
@@ -85,6 +93,7 @@ function ValidOneKey(key)
 	for _, note in ipairs(_notes) do
 		if note.state == Note.Active or note.state == Note.Passive then
 			note:setState(Note.Miss)
+			_hitCount = 0
 			break
 		end
 	end
@@ -144,7 +153,7 @@ function Stage.Load()
 	GamePad:RegisterEvent(GamePad.X, onX)
 	GamePad:RegisterEvent(GamePad.Y, onY)
 
-	_deejay.background = love.audio.newSource("assets/music/beat" .. 
+	_deejay.background = love.audio.newSource("assets/music/beat" ..
 		math.random(1,Settings.BeatFilesAvailable) .. ".ogg", "static")
 	_deejay.background:setLooping(true)
 	_deejay.cheers = love.audio.newSource("assets/music/cheers.ogg", "static")
@@ -152,6 +161,12 @@ function Stage.Load()
 	_deejay.cheers:play()
 	_deejay.scratch = love.audio.newSource("assets/music/scratch.ogg", "static")
 	_deejay.scratch:setLooping(false)
+	_deejay.oooh1 = love.audio.newSource("assets/music/Oooh1.ogg", "static")
+	_deejay.oooh1:setLooping(false)
+	_deejay.oooh2 = love.audio.newSource("assets/music/Oooh2.ogg", "static")
+	_deejay.oooh2:setLooping(false)
+	_deejay.yeah = love.audio.newSource("assets/music/Yeah.ogg", "static")
+	_deejay.yeah:setLooping(false)
 
 	_playerLeft = LoveAnimation.new("assets/animations/rapper1.lua")
 	_playerRight = LoveAnimation.new("assets/animations/rapper1.lua","assets/sprites/rapper2_spritesheet.png")
@@ -173,6 +188,7 @@ function Stage.Update(dt)
 	if _scoreLeft >= 100 or _scoreRight >= 100 then
 		if _scoreLeft >= 100 then
 			if _inRound then
+				_deejay.yeah:play()
 				_playerLeft:setState("victory")
 				_playerRight:setState("defeat")
 				_inRound = false
@@ -180,6 +196,7 @@ function Stage.Update(dt)
 			_announcementVictoryLeft:Update(dt)
 		else
 			if _inRound then
+				_deejay.yeah:play()
 				_playerLeft:setState("defeat")
 				_playerRight:setState("victory")
 				_inRound = false

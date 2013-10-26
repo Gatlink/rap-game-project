@@ -27,7 +27,7 @@ return {
 			switchDelay = 0.2
 		},
 		victory = {
-			frameCount = 3,
+			frameCount = 1,
 			offsetY = 1536,
 			frameW = 512,
 			frameH = 512,
@@ -35,7 +35,7 @@ return {
 			switchDelay = 0.2
 		},
 		defeat = {
-			frameCount = 3,
+			frameCount = 1,
 			offsetY = 2048,
 			frameW = 512,
 			frameH = 512,

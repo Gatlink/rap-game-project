@@ -50,7 +50,7 @@ end
 
 function Note:Update(dt)
 
-	self.x = self.x + dt * self.direction * Settings.NoteSpeed
+	self.x = self.x + dt * self.direction * Settings.NoteSpeed * (self.state == Note.Hit and 2 or 1)
 
 	self.sprite:update(dt)
 	self.sprite:setPosition(self.x, self.y)

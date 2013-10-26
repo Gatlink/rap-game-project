@@ -136,6 +136,8 @@ function Stage.Load()
 		math.random(1,4) .. ".ogg", "static")
 	_deejay.background:setLooping(true)
 	_deejay.cheers = love.audio.newSource("assets/music/cheers.ogg", "static")
+	_deejay.cheers:setLooping(true)
+	_deejay.cheers:play()
 	_deejay.scratch = love.audio.newSource("assets/music/scratch.ogg", "static")
 	_deejay.scratch:setLooping(false)
 
@@ -222,10 +224,16 @@ function Stage.Update(dt)
 			newNote = NoteGenerator.GetNextNote()
 		end
 
+	if _inRound and _deejay.cheers:getVolume() > 0.3 then
+		_deejay.cheers:setVolume(_deejay.cheers:getVolume() - 0.005)
+	end
+
 	if #_notes == 0 and NoteGenerator.RemainingNotes() == 0 then
 		_interludeTimeout = _interludeTimeout - dt
 		_deejay.background:stop()
 		if _inRound then
+			_deejay.cheers:setVolume(1)
+			_deejay.cheers:stop()
 			_deejay.cheers:play()
 		end
 		if _inRound then

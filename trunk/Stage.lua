@@ -32,7 +32,7 @@ function ValidOneKey(key)
 		end
 
 		if not hasLeftHitzone(note) and note.state ~= Note.Hit and note.value == key then
-			note.state = Note.Hit
+			note:setState(Note.Hit)
 			break
 		end
 	end
@@ -64,12 +64,12 @@ function Stage.Load()
 
 	_playerLeft = LoveAnimation.new("assets/animations/rapper1.lua")
 	_playerRight = _playerLeft:clone()
-	
+
 
 	_playerRight:setRelativeOrigin(0.5,0.5)
 	_playerLeft:setRelativeOrigin(0.5,0.5)
 	_playerLeft:flipHorizontal()
-	
+
 	_playerRight:setPosition(7*Settings.ScreenWidth/8, Settings.ScreenHeight/2)
 	_playerLeft:setPosition(Settings.ScreenWidth/8, Settings.ScreenHeight/2)
 
@@ -89,11 +89,11 @@ function Stage.Update(dt)
 
 	for _, note in ipairs(_notes) do
 		if isInsideHitzone(note) and note.state == Note.Passive then
-			note.state = Note.Active
+			note:setState(Note.Active)
 		end
 
 		if hasLeftHitzone(note) and note.state ~= Note.Hit then
-			note.state = Note.Miss
+			note:setState(Note.Miss)
 		end
 
 		note:Update(dt)

@@ -73,7 +73,7 @@ function ValidOneKey(key)
 			end
 
 			if _hitCount >= 3 and math.random(0, 10) > 7 then
-				_deejay['oooh' .. math.random(1,2)]:play()
+				_deejay['oooh1']:play()
 				_hitCount = 0
 			end
 			return
@@ -163,8 +163,8 @@ function Stage.Load()
 	_deejay.scratch:setLooping(false)
 	_deejay.oooh1 = love.audio.newSource("assets/music/Oooh1.ogg", "static")
 	_deejay.oooh1:setLooping(false)
-	_deejay.oooh2 = love.audio.newSource("assets/music/Oooh2.ogg", "static")
-	_deejay.oooh2:setLooping(false)
+-- 	_deejay.oooh2 = love.audio.newSource("assets/music/Oooh2.ogg", "static")
+-- 	_deejay.oooh2:setLooping(false)
 	_deejay.yeah = love.audio.newSource("assets/music/Yeah.ogg", "static")
 	_deejay.yeah:setLooping(false)
 

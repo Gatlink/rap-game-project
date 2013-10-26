@@ -145,7 +145,7 @@ function Stage.Load()
 	GamePad:RegisterEvent(GamePad.Y, onY)
 
 	_deejay.background = love.audio.newSource("assets/music/beat" .. 
-		math.random(1,Settings.BeatFilesAvailable + 1) .. ".ogg", "static")
+		math.random(1,Settings.BeatFilesAvailable) .. ".ogg", "static")
 	_deejay.background:setLooping(true)
 	_deejay.cheers = love.audio.newSource("assets/music/cheers.ogg", "static")
 	_deejay.cheers:setLooping(true)
@@ -172,11 +172,23 @@ function Stage.Update(dt)
 	-- Vicotry
 	if _scoreLeft >= 100 or _scoreRight >= 100 then
 		if _scoreLeft >= 100 then
+			if _inRound then
+				_playerLeft:setState("victory")
+				_playerRight:setState("defeat")
+				_inRound = false
+			end
 			_announcementVictoryLeft:Update(dt)
 		else
+			if _inRound then
+				_playerLeft:setState("defeat")
+				_playerRight:setState("victory")
+				_inRound = false
+			end
 			_announcementVictoryRight:Update(dt)
 		end
 		_deejay.background:pause()
+		_playerRight:update(dt)
+		_playerLeft:update(dt)
 		return
 	end
 

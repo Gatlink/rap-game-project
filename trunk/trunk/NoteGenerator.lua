@@ -10,6 +10,7 @@ local __notesPerInterval = 1
 local __timeInterval = 1 --sec
 local __tick = 0
 local __lastY = (Settings.NoteMaxOffsetY + Settings.NoteMinOffsetY) / 2
+local _isRunning = true
 
 local tablePop = function(tab)
 	if #tab == 0 then
@@ -20,7 +21,7 @@ end
 
 function NoteGenerator.Update(dt)
 
-	if __notesPerInterval == 0 then
+	if __notesPerInterval == 0  or _isRunning == false then
 		return
 	end
 
@@ -69,4 +70,12 @@ end
 
 function NoteGenerator.GetNextNote()
 	return tablePop(__notes)
+end
+
+function NoteGenerator.Stop()
+	_isRunning = false
+end
+
+function NoteGenerator.Start()
+	_isRunning = true
 end

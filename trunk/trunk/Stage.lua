@@ -35,7 +35,6 @@ local _rightHitzoneBorder = Settings.ScreenWidth / 2 + _hitzoneWidth / 2
 local _notesPerRound = Settings.DefaultNotesPerRound
 local _roundCount = 0
 local _interludeTimeout = 3
-local _timeLeftInRound = 15
 
 local _deejay = {
 	backgroundBeat = nil
@@ -217,9 +216,9 @@ function Stage.Update(dt)
 				NoteGenerator.SetTimeInterval(NoteGenerator.GetTimeInterval() + 1)
 				NoteGenerator.SetNotesPerInterval(NoteGenerator.GetNotesPerInterval() + 4)
 			end
-			_roundCount = _roundCount + 1
 			-- we start the next round
-			NoteGenerator.Generate(_notesPerRound)
+			NoteGenerator.Generate(_roundCount == 0 and _notesPerRound/2 or _notesPerRound)
+			_roundCount = _roundCount + 1
 			NoteGenerator.ToggleDirection()
 			_deejay.background:play()
 			_interludeTimeout = 3

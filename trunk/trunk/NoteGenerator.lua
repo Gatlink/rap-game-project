@@ -86,7 +86,7 @@ function NoteGenerator.Update(dt)
 
 		_pauseCountdown = _pauseCountdown - 1
 		if _pauseCountdown == 0 then
-			NoteGenerator.Timeout(3*math.random())
+			NoteGenerator.Timeout(2*math.random())
 			_pauseCountdown = math.random(3, 7)
 		end
 

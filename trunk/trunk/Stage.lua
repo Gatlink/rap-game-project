@@ -202,14 +202,14 @@ function Stage.Update(dt)
 
 			if _roundCount % 2 == 0 then
 				NoteGenerator.SetTimeInterval(NoteGenerator.GetTimeInterval() + 1)
-				NoteGenerator.SetNotesPerInterval(NoteGenerator.GetNotesPerInterval() + 4)
+				NoteGenerator.SetNotesPerInterval(NoteGenerator.GetNotesPerInterval() + 5)
 			end
 			_roundCount = _roundCount + 1
 			-- we start the next round
 			NoteGenerator.Generate(_notesPerRound)
 			NoteGenerator.ToggleDirection()
 			_deejay.background:play()
-			_interludeTimeout = 5
+			_interludeTimeout = Settings.InterludeTimeout
 		end
 	end
 

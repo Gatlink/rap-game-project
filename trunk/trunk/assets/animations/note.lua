@@ -24,7 +24,7 @@ return {
 			switchDelay = 0.1
 		},
 		["3"] = {
-			frameCount = 1,
+			frameCount = 3,
 			offsetY = 64,
 			frameW = 32,
 			frameH = 32,

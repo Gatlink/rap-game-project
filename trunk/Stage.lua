@@ -42,7 +42,10 @@ local _interludeTimeout = 3
 local _inRound = true
 local _deejay = {
 	backgroundBeat = nil,
-	words = {}
+	voices = {
+		[Note.Left] = {},
+		[Note.Right] = {}
+	}
 }
 local _lastWord
 
@@ -70,7 +73,7 @@ function ValidOneKey(key)
 			note:setState(Note.Hit)
 
 			if _lastWord ~= nil then _lastWord:stop() end
-			_lastWord = _deejay.words[math.random(1, Settings.WordCount)]
+			_lastWord = _deejay.voices[note.direction][math.random(1, Settings.WordCount)]
 			_lastWord:play()
 
 			if note.direction == Note.Right then
@@ -175,7 +178,8 @@ function Stage.Load()
 	_deejay.yeah = love.audio.newSource("assets/music/Yeah.ogg", "static")
 	_deejay.yeah:setLooping(false)
 	for i=1,Settings.WordCount do
-		table.insert(_deejay.words, love.audio.newSource("assets/music/word" .. i .. ".ogg"))
+		table.insert(_deejay.voices[Note.Left], love.audio.newSource("assets/music/word" .. i .. ".ogg"))
+		table.insert(_deejay.voices[Note.Right], love.audio.newSource("assets/music/word" .. Settings.WordCount + i .. ".ogg"))
 	end
 
 	_playerLeft = LoveAnimation.new("assets/animations/rapper1.lua")

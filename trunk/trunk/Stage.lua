@@ -33,6 +33,8 @@ function ValidOneKey(key)
 
 		if not hasLeftHitzone(note) and note.state ~= Note.Hit and note.value == key then
 			note:setState(Note.Hit)
+			local player = note.direction == Note.Right and _playerLeft or _playerRight
+			player:setState('attack')
 			break
 		end
 	end
@@ -87,10 +89,20 @@ function Stage.Update(dt)
 		newNote = NoteGenerator.GetNextNote()
 	end
 
-	for _, note in ipairs(_notes) do
-
-		if _playerRight:intersects(note.x, note.y) then
-			print("intersect")
+	local toDestroy = {}
+	for i, note in ipairs(_notes) do
+		-- Is player right hit
+		if note.direction == Note.Right
+		and note.state == Note.Hit
+		and _playerRight:intersects(note.x, note.y) then
+			_playerRight:setState('dammage')
+			table.insert(toDestroy, i)
+		-- Is player left hit
+		elseif note.direction == Note.Left
+		and note.state == Note.Hit
+		and _playerLeft:intersects(note.x, note.y) then
+			_playerLeft:setState('dammage')
+			table.insert(toDestroy, i)
 		end
 
 		if isInsideHitzone(note) and note.state == Note.Passive then
@@ -102,6 +114,10 @@ function Stage.Update(dt)
 		end
 
 		note:Update(dt)
+	end
+
+	for _, noteIdx in ipairs(toDestroy) do
+		table.remove(_notes, noteIdx)
 	end
 end
 

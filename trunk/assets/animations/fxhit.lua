@@ -8,7 +8,7 @@ return {
 			frameW = 64,
 			frameH = 64,
 			nextState = "normal",
-			switchDelay = 0.1
+			switchDelay = 0.06
 		}
 	}
 }

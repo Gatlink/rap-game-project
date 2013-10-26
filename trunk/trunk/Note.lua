@@ -61,6 +61,9 @@ function Note:setState(state)
 		self.fx:resetAnimation()
 		self.fx:setVisibility(true)
 		self.fx:unpause()
+		if self.direction < 0 then
+			self.sprite:flipHorizontal()
+		end
 	end
 end
 

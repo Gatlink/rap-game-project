@@ -13,6 +13,12 @@ local _hitzoneWidth = Settings.ScreenWidth * Settings.HitzoneWidthRatio
 local _leftHitzoneBorder = Settings.ScreenWidth / 2 - _hitzoneWidth / 2
 local _rightHitzoneBorder = Settings.ScreenWidth / 2 + _hitzoneWidth / 2
 
+local _deejay = {
+	
+	backgroundBeat = nil
+	
+}
+
 -- HIT TESTS
 local function isInsideHitzone(note)
 	return note.x > _leftHitzoneBorder and note.x < _rightHitzoneBorder
@@ -63,6 +69,10 @@ function Stage.Load()
 	GamePad:RegisterEvent(GamePad.B, onB)
 	GamePad:RegisterEvent(GamePad.X, onX)
 	GamePad:RegisterEvent(GamePad.Y, onY)
+
+	_deejay.background = love.audio.newSource("assets/music/beat2.ogg", "static")
+	_deejay.background:setLooping(true)
+	_deejay.background:play()
 
 	_playerLeft = LoveAnimation.new("assets/animations/rapper1.lua")
 	_playerRight = _playerLeft:clone()

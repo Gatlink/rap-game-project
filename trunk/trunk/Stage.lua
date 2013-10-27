@@ -7,6 +7,7 @@ require 'Crowds'
 require 'StateRound'
 require 'StateInterlude'
 require 'StateVictory'
+require 'StatePause'
 
 Stage = {}
 
@@ -20,12 +21,14 @@ local _hitzoneWidth = Settings.ScreenWidth * Settings.HitzoneWidthRatio
 local _leftHitzoneBorder = Settings.ScreenWidth / 2 - _hitzoneWidth / 2
 local _rightHitzoneBorder = Settings.ScreenWidth / 2 + _hitzoneWidth / 2
 
-local _currentState
 local _states = {
 	round = StateRound,
 	interlude = StateInterlude,
-	victory = StateVictory
+	victory = StateVictory,
+	pause = StatePause
 }
+
+Stage.CurrentState = nil
 
 Stage.PlayerLeft = nil
 Stage.PlayerRight = nil
@@ -39,11 +42,11 @@ Stage.Notes = {}
 Stage.HitCount = 0
 
 function Stage.SetState(state)
-	if _currentState ~= nil then
-		_states[_currentState].Leave()
+	if Stage.CurrentState ~= nil then
+		_states[Stage.CurrentState].Leave()
 	end
-	_currentState = state
-	_states[_currentState].Enter()
+	Stage.CurrentState = state
+	_states[Stage.CurrentState].Enter()
 end
 
 -- HIT TESTS
@@ -79,14 +82,14 @@ function Stage.Load()
 	NoteGenerator.ToggleDirection()
 
 	for _, state in pairs(_states) do
-		state.Load(Stage)
+		state:Load(Stage)
 	end
 
 	Stage.SetState('interlude')
 end
 
 function Stage.Update(dt)
-	_states[_currentState].Update(dt)
+	_states[Stage.CurrentState].Update(dt)
 
 	local i = 1
 	while i <= # Stage.Notes do
@@ -132,5 +135,5 @@ function Stage.Draw()
 	-- crowd
 	Crowds.Draw()
 
-	_states[_currentState].Draw()
+	_states[Stage.CurrentState].Draw()
 end

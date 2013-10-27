@@ -1,17 +1,18 @@
 require 'Settings'
+require 'StageState'
 require 'Crowds'
 require 'Deejay'
 require 'Announcement'
 
 StateInterlude = {}
+setmetatable(StateInterlude, StageState)
 
-local _stage
 local _announcementReady
 local _announcementGo
 local _interludeTimeout = Settings.InterludeTimeout
 
-function StateInterlude.Load(stage)
-	_stage = stage
+function StateInterlude:Load(stage)
+	StageState.Load(self, stage)
 
 	_announcementReady = Announcement.New("assets/sprites/Ready.png",Settings.ScreenWidth/2,200)
 	_announcementGo = Announcement.New("assets/sprites/Go.png",Settings.ScreenWidth/2,200)
@@ -40,12 +41,12 @@ end
 function StateInterlude.Update(dt)
 	_interludeTimeout = _interludeTimeout - dt
 
-	_stage.PlayerLeft:update(dt)
-	_stage.PlayerRight:update(dt)
+	StateInterlude._stage.PlayerLeft:update(dt)
+	StateInterlude._stage.PlayerRight:update(dt)
 	Crowds.Update(dt)
 
 	if _interludeTimeout <= 0 then
-		_stage.SetState('round')
+		StateInterlude._stage.SetState('round')
 	elseif _interludeTimeout <= 0.3 then
 		_announcementGo:Update(dt)
 		Deejay.play('go')

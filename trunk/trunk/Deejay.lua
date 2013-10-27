@@ -1,10 +1,9 @@
 Deejay = {}
 
 local _defaultExt = "ogg"
+local _playin = {}
 local _soundsToLoad = {
-
-	background = { filename = "beat",
-		suffix = math.random(1,Settings.BeatFilesAvailable), loop= true},
+	background = { filename="beat",suffix = math.random(1,Settings.BeatFilesAvailable),loop= true },
 	cheers = {loop=true},
 	scratch = {},
 	oooh1 = { filename="Oooh1" },
@@ -15,34 +14,19 @@ local _soundsToLoad = {
 	yo = {filename="Yo", ext="ogg"}
 }
 
-
-
--- Background
--- Deejay.background = love.audio.newSource("assets/music/beat" ..
--- 		math.random(1,Settings.BeatFilesAvailable) .. ".ogg", "static")
--- -- Deejay.background:setLooping(true)
--- -- Cheers
--- Deejay.cheers = love.audio.newSource("assets/music/cheers.ogg", "static")
--- -- Deejay.cheers:setLooping(true)
-
--- -- Scratch
--- Deejay.scratch = love.audio.newSource("assets/music/scratch.ogg", "static")
-
-
--- Deejay.oooh1 = love.audio.newSource("assets/music/Oooh1.ogg", "static")
--- Deejay.oooh2 = love.audio.newSource("assets/music/Oooh2.ogg", "static")
--- Deejay.yeah = love.audio.newSource("assets/music/Yeah.ogg", "static")
--- Deejay.ready = love.audio.newSource("assets/music/Ready.ogg", "static")
--- Deejay.go = love.audio.newSource("assets/music/Go.ogg", "static")
--- Deejay.yo = love.audio.newSource("assets/music/Yo.ogg", "static")
-
-
 function Deejay.play(name)
 	Deejay[name]:play()
+	table.insert(_playin, name)
 end
 
 function Deejay.stop(name)
 	Deejay[name]:stop()
+	for i, sound in ipairs(_playin) do
+		if sound == name then
+			table.remove(_playin, i)
+			break
+		end
+	end
 end
 
 function Deejay.replay(name)
@@ -50,10 +34,17 @@ function Deejay.replay(name)
 	Deejay[name]:play()
 end
 
-function Deejay.random(name)
-
+function Deejay.pauseAll()
+	for _, sound in ipairs(_playin) do
+		Deejay[sound]:pause()
+	end
 end
 
+function Deejay.resumeAll()
+	for _, sound in ipairs(_playin) do
+		Deejay[sound]:play()
+	end
+end
 
 function Deejay.Load(dir)
 	dir = dir or Settings.DefaultMusicDirectory
@@ -63,28 +54,18 @@ function Deejay.Load(dir)
 		local filename = descriptor.filename or name
 		local suffix =  descriptor.suffix or ""
 
-		print("loading sound " .. dir .. "/" .. filename .. suffix .. "." .. ext)
-		Deejay[name] = love.audio.newSource(
-			dir .. "/" .. filename .. suffix .. "." .. ext, "static")
-
-		Deejay[name]:setLooping(descriptor.loop or false)
+		Deejay[name] = love.audio.newSource(dir .. "/" .. filename .. suffix .. "." .. ext, "static")
+		Deejay[name]:setLooping(descriptor.loop)
 
 	end
-
-	-- local files = love.filesystem.enumerate(dir)
-	-- for k, file in ipairs(files) dof
- --    	if love.filesystem.isFile(dir .. "/" .. file ) then
- --    		if string.match(file, "[^/]*.ogg") then
-	-- 			local name = string.sub(file, 0 , #file - #(".ogg"))
-	-- 			-- LOAD FILE HERE
-	-- 		end
- --    	end
-	-- end
-
-
-
 end
 
-function Deejay.update(dt)
-	-- body
+function Deejay.Update(dt)
+	local stillPlayin = {}
+	for _, sound in ipairs(_playin) do
+		if not Deejay[sound]:isStopped() then
+			table.insert(stillPlayin, sound)
+		end
+	end
+	_playin = stillPlayin
 end

@@ -7,6 +7,7 @@ GamePad.A = 1
 GamePad.B = 2
 GamePad.X = 3
 GamePad.Y = 4
+GamePad.Start = 8
 
 local __keyboardUsed = false
 local __events = {}
@@ -35,6 +36,8 @@ function love.joystickpressed(joystick, key)
 		GamePad:OnPress(0, GamePad.X)
 	elseif key == 4 then
 		GamePad:OnPress(0, GamePad.Y)
+	elseif key == 8 then
+		GamePad:OnPress(0, GamePad.Start)
 	end
 end
 
@@ -46,7 +49,6 @@ local inTable = function(tab, item)
 end
 
 function GamePad:OnPress(pad, button)
-
 	if # __callbacks > 0 then
 		for i,cb in ipairs(__callbacks) do
 			cb(button)

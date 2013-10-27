@@ -26,6 +26,6 @@ function love.draw()
 end
 
 function love.update(dt)
-	Deejay.update()
+	Deejay.Update(dt)
 	Stage.Update(dt)
 end

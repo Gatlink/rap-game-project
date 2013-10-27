@@ -9,7 +9,7 @@ local _soundsToLoad = {
 	scratch = {},
 	oooh1 = { filename="Oooh1" },
 	oooh2 = { filename="Oooh2" },
-	yeah = {filename="Yeah"},
+	oooh3 = { filename="Oooh3" },
 	ready = {filename="Ready"},
 	go = {filename="Go"},
 	yo = {filename="Yo", ext="ogg"}

@@ -36,13 +36,6 @@ local _roundCount = 0
 local _interludeTimeout = 3
 
 local _inRound = true
-local _deejay = {
-	backgroundBeat = nil,
-	voices = {
-		[Note.Left] = {},
-		[Note.Right] = {}
-	}
-}
 local _lastWord
 
 -- HIT TESTS
@@ -68,9 +61,12 @@ function ValidOneKey(key)
 		elseif not hasLeftHitzone(note) and note.state ~= Note.Hit and note.state ~= Note.Miss and note.value == key then
 			note:setState(Note.Hit)
 
-			_deejay.yo:stop()
-			_deejay.yo:setPitch(0.90 + note.value * 0.05)
-			_deejay.yo:play()
+			--if _lastWord ~= nil then _lastWord:stop() end
+			--_lastWord = Deejay.voices[note.direction][math.random(1, Settings.WordCount)]
+			--_lastWord:play()
+			Deejay.yo:stop()
+			Deejay.yo:setPitch(0.90 + note.value * 0.05)
+			Deejay.yo:play()
 
 			if note.direction == Note.Right then
 				_playerLeft:setState('attack')
@@ -79,7 +75,7 @@ function ValidOneKey(key)
 			end
 
 			if _hitCount >= 3 and math.random(0, 10) > 8 then
-				_deejay['oooh' .. math.random(1, 2)]:play()
+				Deejay['oooh' .. math.random(1, 2)]:play()
 				_hitCount = 0
 			end
 			return
@@ -143,26 +139,7 @@ function Stage.Load()
 	GamePad:RegisterEvent(GamePad.X, onX)
 	GamePad:RegisterEvent(GamePad.Y, onY)
 
-	_deejay.background = love.audio.newSource("assets/music/beat" ..
-		math.random(1,Settings.BeatFilesAvailable) .. ".ogg", "static")
-	_deejay.background:setLooping(true)
-	_deejay.cheers = love.audio.newSource("assets/music/cheers.ogg", "static")
-	_deejay.cheers:setLooping(true)
-	_deejay.cheers:play()
-	_deejay.scratch = love.audio.newSource("assets/music/scratch.ogg", "static")
-	_deejay.scratch:setLooping(false)
-	_deejay.oooh1 = love.audio.newSource("assets/music/Oooh1.ogg", "static")
-	_deejay.oooh1:setLooping(false)
- 	_deejay.oooh2 = love.audio.newSource("assets/music/Oooh2.ogg", "static")
-	_deejay.yeah = love.audio.newSource("assets/music/Yeah.ogg", "static")
-	_deejay.yeah:setLooping(false)
-	_deejay.ready = love.audio.newSource("assets/music/Ready.ogg", "static")
-	_deejay.go = love.audio.newSource("assets/music/Go.ogg", "static")
-	_deejay.yo = love.audio.newSource("assets/music/Yo.ogg", "static")
-	for i=1,Settings.WordCount do
-		table.insert(_deejay.voices[Note.Left], love.audio.newSource("assets/music/word" .. i .. ".ogg"))
-		table.insert(_deejay.voices[Note.Right], love.audio.newSource("assets/music/word" .. Settings.WordCount + i .. ".ogg"))
-	end
+	Deejay.play('cheers')
 
 	_playerLeft = LoveAnimation.new("assets/animations/rapper1.lua")
 	_playerRight = LoveAnimation.new("assets/animations/rapper1.lua","assets/sprites/rapper2_spritesheet.png")
@@ -184,7 +161,7 @@ function Stage.Update(dt)
 	if _scoreLeft >= 100 or _scoreRight >= 100 then
 		if _scoreLeft >= 100 then
 			if _inRound then
-				_deejay.yeah:play()
+				Deejay.play("yeah")
 				_playerLeft:setState("victory")
 				_playerRight:setState("defeat")
 				_inRound = false
@@ -192,14 +169,14 @@ function Stage.Update(dt)
 			_announcementVictoryLeft:Update(dt)
 		else
 			if _inRound then
-				_deejay.yeah:play()
+				Deejay.play("yeah")
 				_playerLeft:setState("defeat")
 				_playerRight:setState("victory")
 				_inRound = false
 			end
 			_announcementVictoryRight:Update(dt)
 		end
-		_deejay.background:stop()
+		Deejay.play("background")
 		Crowds.SetSpeedMultiplier(2)
 	end
 
@@ -259,20 +236,19 @@ function Stage.Update(dt)
 			newNote = NoteGenerator.GetNextNote()
 		end
 
-	if _inRound and _deejay.cheers:getVolume() > 0.2 then
-		_deejay.cheers:setVolume(_deejay.cheers:getVolume() - 0.005)
+	if _inRound and Deejay.cheers:getVolume() > 0.2 then
+		Deejay.cheers:setVolume(Deejay.cheers:getVolume() - 0.005)
 	end
 
 	if #_notes == 0 and NoteGenerator.RemainingNotes() == 0 then
 		_interludeTimeout = _interludeTimeout - dt
-		_deejay.background:stop()
+		Deejay.stop("background")
 		if _inRound then
-			_deejay.cheers:setVolume(1)
-			_deejay.cheers:stop()
-			_deejay.cheers:play()
+			Deejay.cheers:setVolume(1)
+			Deejay.replay("cheers")
 		end
 		if _inRound then
-			_deejay.scratch:play()
+			Deejay.play('scratch')
 		end
 
 		Crowds.SetSpeedMultiplier(2)
@@ -280,10 +256,10 @@ function Stage.Update(dt)
 		-- Announcement
 		if _interludeTimeout <= 0.3 then
 			_announcementGo:Update(dt)
-			_deejay.go:play()
+			Deejay.play("go")
 		elseif _interludeTimeout <= 2.5 then
 			_announcementReady:Update(dt)
-			if _inRound then _deejay.ready:play() end
+			if _inRound then Deejay.play("ready") end
 		end
 
 		_inRound = false
@@ -299,7 +275,7 @@ function Stage.Update(dt)
 			NoteGenerator.Generate(_roundCount == 0 and _notesPerRound/2 or _notesPerRound)
 			_roundCount = _roundCount + 1
 			NoteGenerator.ToggleDirection()
-			_deejay.background:play()
+			Deejay.play("background")
 			_interludeTimeout = 3
 
 			_announcementGo:Reset()

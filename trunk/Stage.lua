@@ -3,6 +3,7 @@ require 'Note'
 require 'NoteGenerator'
 require 'loveanimation'
 require 'Announcement'
+require 'Crowds'
 
 Stage = {}
 
@@ -11,11 +12,6 @@ local _timeline
 local _streetCred
 local _hitzoneLeft
 local _hitzoneRight
-local _crowdLeft
-local _crowdCenter
-local _crowdRight
-local _crowdFrontLeft
-local _crowdFrontRight
 local _announcementReady
 local _announcementGo
 local _announcementVictoryLeft
@@ -72,9 +68,6 @@ function ValidOneKey(key)
 		elseif not hasLeftHitzone(note) and note.state ~= Note.Hit and note.state ~= Note.Miss and note.value == key then
 			note:setState(Note.Hit)
 
-			--if _lastWord ~= nil then _lastWord:stop() end
-			--_lastWord = _deejay.voices[note.direction][math.random(1, Settings.WordCount)]
-			--_lastWord:play()
 			_deejay.yo:stop()
 			_deejay.yo:setPitch(0.90 + note.value * 0.05)
 			_deejay.yo:play()
@@ -85,7 +78,7 @@ function ValidOneKey(key)
 				_playerRight:setState('attack')
 			end
 
-			if _hitCount >= 3 and math.random(0, 10) > 7 then
+			if _hitCount >= 3 and math.random(0, 10) > 8 then
 				_deejay['oooh' .. math.random(1, 2)]:play()
 				_hitCount = 0
 			end
@@ -136,23 +129,7 @@ function Stage.Load()
 	_hitzoneRight = love.graphics.newImage("assets/sprites/Hitzone_droite.png")
 
 	-- Crowd
-	_crowdLeft = LoveAnimation.new("assets/animations/crowd.lua")
-	_crowdLeft:setPosition(-35, 350)
-
-	_crowdCenter = LoveAnimation.new("assets/animations/crowd.lua","assets/sprites/public_02_spritesheet.png")
-	_crowdCenter:setPosition(Settings.ScreenWidth / 2 - _crowdCenter:getFrameWidth(0) / 2, 380)
-	_crowdCenter:setCurrentFrame(2)
-
-	_crowdRight = LoveAnimation.new("assets/animations/crowd.lua","assets/sprites/public_01_spritesheet.png")
-	_crowdRight:setPosition(Settings.ScreenWidth - _crowdRight:getFrameWidth() + 35, 360)
-	_crowdRight:setCurrentFrame(1)
-
-	_crowdFrontLeft = _crowdRight:clone()
-	_crowdFrontLeft:setPosition(_crowdCenter.x - _crowdFrontLeft:getFrameWidth(), 390)
-	_crowdFrontLeft:setCurrentFrame(1)
-
-	_crowdFrontRight = _crowdLeft:clone()
-	_crowdFrontRight:setPosition(_crowdCenter.x + _crowdCenter:getFrameWidth(), 385)
+	Crowds.Load()
 
 	-- Announcement
 	_announcementReady = Announcement.New("assets/sprites/Ready.png",Settings.ScreenWidth/2,200)
@@ -222,24 +199,15 @@ function Stage.Update(dt)
 			end
 			_announcementVictoryRight:Update(dt)
 		end
-		--_lastWord:stop()
 		_deejay.background:stop()
-		_crowdLeft:setSpeedMultiplier(2)
-		_crowdCenter:setSpeedMultiplier(2)
-		_crowdRight:setSpeedMultiplier(2)
-		_crowdFrontLeft:setSpeedMultiplier(2)
-		_crowdFrontRight:setSpeedMultiplier(2)
+		Crowds.SetSpeedMultiplier(2)
 	end
 
 	NoteGenerator.Update(dt)
 
 	_playerLeft:update(dt)
 	_playerRight:update(dt)
-	_crowdLeft:update(dt)
-	_crowdCenter:update(dt)
-	_crowdRight:update(dt)
-	_crowdFrontLeft:update(dt)
-	_crowdFrontRight:update(dt)
+	Crowds.Update(dt)
 
 	if _scoreLeft >= 100 or _scoreRight >= 100 then
 		return
@@ -307,11 +275,7 @@ function Stage.Update(dt)
 			_deejay.scratch:play()
 		end
 
-		_crowdLeft:setSpeedMultiplier(2)
-		_crowdCenter:setSpeedMultiplier(2)
-		_crowdRight:setSpeedMultiplier(2)
-		_crowdFrontLeft:setSpeedMultiplier(2)
-		_crowdFrontRight:setSpeedMultiplier(2)
+		Crowds.SetSpeedMultiplier(2)
 
 		-- Announcement
 		if _interludeTimeout <= 0.3 then
@@ -342,11 +306,7 @@ function Stage.Update(dt)
 			_announcementReady:Reset()
 		end
 	else
-		_crowdLeft:setSpeedMultiplier(1)
-		_crowdCenter:setSpeedMultiplier(1)
-		_crowdRight:setSpeedMultiplier(1)
-		_crowdFrontLeft:setSpeedMultiplier(1)
-		_crowdFrontRight:setSpeedMultiplier(1)
+		Crowds.SetSpeedMultiplier(1)
 		_inRound = true
 	end
 
@@ -384,11 +344,7 @@ function Stage.Draw()
 	_playerRight:draw()
 
 	-- crowd
-	_crowdRight:draw()
-	_crowdLeft:draw()
-	_crowdFrontLeft:draw()
-	_crowdFrontRight:draw()
-	_crowdCenter:draw()
+	Crowds.Draw()
 
 	-- Announcement
 	if #_notes == 0 and NoteGenerator.RemainingNotes() == 0 then

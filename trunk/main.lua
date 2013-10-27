@@ -1,6 +1,7 @@
 require 'Settings'
 require 'Stage'
 require 'GamePad'
+require 'Deejay'
 
 local _background
 
@@ -10,6 +11,7 @@ function love.load(arg)
 
 	_background = love.graphics.newImage('assets/sprites/Background_00.png')
 
+	Deejay.Load("assets/music")
 	Stage.Load()
 end
 
@@ -24,5 +26,6 @@ function love.draw()
 end
 
 function love.update(dt)
+	Deejay.update()
 	Stage.Update(dt)
 end

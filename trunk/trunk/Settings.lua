@@ -29,3 +29,5 @@ Settings.InterludeTimeout = 3
 Settings.BeatFilesAvailable = 6
 
 Settings.WordCount = 5
+
+Settings.ScoreToWin = 100

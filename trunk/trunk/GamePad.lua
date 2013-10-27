@@ -38,8 +38,8 @@ function love.joystickpressed(joystick, key)
 	end
 end
 
-local inTable = function(table, item)
-    for key, value in pairs(tbl) do
+local inTable = function(tab, item)
+    for key, value in pairs(tab) do
         if value == item then return key end
     end
     return false
@@ -47,9 +47,9 @@ end
 
 function GamePad:OnPress(pad, button)
 
-	if __callbacks[button] then
-		for i,cb in ipairs(__callbacks[button]) do
-			cb()
+	if # __callbacks > 0 then
+		for i,cb in ipairs(__callbacks) do
+			cb(button)
 		end
 	end
 
@@ -64,11 +64,13 @@ function GamePad:GetNextPress()
 end
 
 
-function GamePad:RegisterEvent(key, callback)
+function GamePad:RegisterEvent(callback)
+	table.insert(__callbacks, callback)
+end
 
-	if not __callbacks[key] then
-		__callbacks[key] = {}
+function GamePad:UnregisterEvent(callback)
+	local key = inTable(__callbacks, callback)
+	if key ~= nil then
+		table.remove(__callbacks, key)
 	end
-
-	table.insert(__callbacks[key], callback)
 end

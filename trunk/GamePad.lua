@@ -24,6 +24,8 @@ function love.keypressed(key)
 		GamePad:OnPress(0, GamePad.X)
 	elseif key == "4" then
 		GamePad:OnPress(0, GamePad.Y)
+	elseif key == "p" then
+		GamePad:OnPress(0, GamePad.Start)
 	end
 end
 

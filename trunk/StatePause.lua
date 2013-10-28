@@ -22,7 +22,7 @@ end
 function StatePause:Load(stage)
 	StageState.Load(self, stage)
 
-	_announcementPause = Announcement.New("assets/sprites/Pause.png",Settings.ScreenWidth/2,200)
+	_announcementPause = Announcement.New("assets/sprites/Pause.png",Settings.ScreenWidth/2,300)
 	GamePad:RegisterEvent(OnPausePressed)
 end
 

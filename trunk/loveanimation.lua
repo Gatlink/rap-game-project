@@ -362,6 +362,9 @@ function LoveAnimation:getFrameHeight()
 	return state_descriptor.frameH
 end
 
+function LoveAnimation:setHorizontalFlip(bool)
+	self.flipX = bool and -1 or 1
+end
 
 --
 -- EVENTS
